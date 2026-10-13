@@ -58,9 +58,10 @@ p { margin: 0; }
 h1, h2, h3, h4 { margin: 0; font-weight: 500; letter-spacing: -0.035em; line-height: 1.02; }
 
 /* ---------- the model, behind everything ---------- */
-.bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #F1F1F4; }
-.bg img { width: 100%; height: calc(100% + 6vh); object-fit: cover; object-position: 50% 40%;
+.bg { position: fixed; top: 0; left: 0; right: 0; height: 100vh; height: 100lvh; z-index: -2; overflow: hidden; background: #F1F1F4; }
+.bg img { display: block; width: 100%; height: calc(100% + 6vh); object-fit: cover; object-position: 50% 40%;
   transform: translate3d(0, var(--py, 0px), 0) scale(var(--z, 1.06)); transform-origin: 50% 40%; will-change: transform; }
+@media (hover: none), (pointer: coarse) { .bg img { height: 100%; transform: none; will-change: auto; } }
 .bg .veil { position: absolute; inset: 0; opacity: var(--veil, 0);
   background: linear-gradient(180deg, rgba(240, 240, 245, 0.5), rgba(232, 232, 238, 0.7)); }
 
@@ -566,10 +567,13 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 
   /* ---------- the model settles as you scroll; a veil rises behind the content ---------- */
   var root = document.documentElement, ticking = false, bar = document.getElementById("bar");
+  var drift = !reduce && !matchMedia("(hover: none), (pointer: coarse)").matches;   // the zoom and drift run on desktop only
+  var VH = window.innerHeight, VW = window.innerWidth;                               // a steady height: phones change innerHeight as the address bar hides
+  window.addEventListener("resize", function () { if (window.innerWidth !== VW) { VW = window.innerWidth; VH = window.innerHeight; } });
   function onScroll() {
     ticking = false;
-    var y = window.scrollY, vh = window.innerHeight, max = Math.max(1, document.body.scrollHeight - vh), p = Math.min(1, y / max);
-    if (!reduce) {
+    var y = window.scrollY, vh = VH, max = Math.max(1, document.body.scrollHeight - window.innerHeight), p = Math.min(1, y / max);
+    if (drift) {
       root.style.setProperty("--z", (1.06 - 0.06 * Math.min(1, y / vh)).toFixed(4));
       root.style.setProperty("--py", (-p * 4).toFixed(2) + "vh");
     }
