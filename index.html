@@ -320,8 +320,11 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   .est-in { position: static; }
   .hero { padding-top: 120px; padding-bottom: 76px; }
   .hero h1 { width: 100%; margin-bottom: 26px; }
-  .ex-sec { --fw: min(100%, calc((100svh - 230px) * 0.5625)); }
-  .screen { aspect-ratio: 9 / 16; border-radius: 14px; }
+  /* phones: the vertical film runs almost edge to edge, into the panel's padding */
+  .ex-sec { padding-left: 8px; padding-right: 8px; }
+  .ex-sec .head { padding: 0 8px; }
+  .ex-sec .film { width: auto; margin: 0 calc(6px - var(--pad)); }
+  .screen { aspect-ratio: 9 / 16; border-radius: 16px; }
   .ex { border-radius: 24px; }
   .screen .play { inset: auto auto 12px 12px; padding: 8px 14px 8px 9px; font-size: 0.86rem; }
   .ctrl { flex-wrap: wrap; gap: 10px 14px; }
