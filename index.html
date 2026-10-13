@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Load-Bearing Legends | Team challenges by architects, Hong Kong</title>
+<meta name="description" content="Team-building challenges designed and run by architects in Hong Kong. Plan it, build it, load it, break it.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Load-Bearing Legends">
+<meta property="og:description" content="Team-building challenges designed and run by architects in Hong Kong. Plan it, build it, load it, break it.">
+<meta property="og:image" content="https://65rv44g6bt-alt.github.io/lbl/media/og.jpg">
+<meta property="og:url" content="https://65rv44g6bt-alt.github.io/lbl/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F1F1F4">
+<link rel="icon" type="image/png" sizes="32x32" href="media/icons/lbl-32.png">
+<link rel="icon" type="image/svg+xml" href="media/icons/lbl.svg">
+<link rel="apple-touch-icon" href="media/icons/lbl-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+<style>
+/* type and colour follow the WonderLab site: Inter, sentence case, 500 headings set tight */
+:root {
+  color-scheme: light;
+  --ink: #1B1D1F;
+  --ink-soft: #5E646A;
+  --line: rgba(27, 29, 31, 0.12);
+  --orange: #FF6000;
+  --orange-ink: #C24A00;
+  --lamp: #FFC994;
+  --glass: rgba(248, 248, 251, 0.62);
+  --edge: rgba(255, 255, 255, 0.7);
+  --font: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --t-1: 0.86rem;
+  --t0: 1.06rem;
+  --t1: 1.28rem;
+  --t2: clamp(1.6rem, 1.2rem + 1.6vw, 2.5rem);
+  --t3: clamp(2rem, 1.3rem + 3vw, 4rem);
+  --t4: clamp(2.8rem, 1.2rem + 6vw, 7.4rem);
+  --pad: clamp(20px, 3.2vw, 44px);
+  --gut: clamp(16px, 3vw, 40px);
+  --spring: cubic-bezier(0.3, 1.35, 0.45, 1);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: #ECECF0; color: var(--ink);
+  font-family: var(--font); font-size: var(--t0); line-height: 1.55; font-weight: 400;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+img, video, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; border-radius: 6px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sr:focus { position: fixed; z-index: 60; top: 12px; left: 12px; width: auto; height: auto; clip: auto; padding: 10px 16px; border-radius: 999px; background: var(--ink); color: #fff; }
+p { margin: 0; }
+h1, h2, h3, h4 { margin: 0; font-weight: 500; letter-spacing: -0.035em; line-height: 1.02; }
+
+/* ---------- the model, behind everything ---------- */
+.bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #F1F1F4; }
+.bg img { width: 100%; height: calc(100% + 6vh); object-fit: cover; object-position: 50% 40%;
+  transform: translate3d(0, var(--py, 0px), 0) scale(var(--z, 1.06)); transform-origin: 50% 40%; will-change: transform; }
+.bg .veil { position: absolute; inset: 0; opacity: var(--veil, 0);
+  background: linear-gradient(180deg, rgba(240, 240, 245, 0.5), rgba(232, 232, 238, 0.7)); }
+
+/* ---------- heads-up display ---------- */
+.hud { position: fixed; z-index: 20; top: 0; left: 0; right: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  gap: 16px; padding: 16px var(--gut); pointer-events: none; }
+.hud > * { pointer-events: auto; }
+.hud::before, .foot-hud::before { content: ""; position: absolute; left: 0; right: 0; z-index: -1; pointer-events: none;
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.hud::before { top: 0; bottom: -22px; background: linear-gradient(rgba(240, 240, 245, 0.7), rgba(240, 240, 245, 0));
+  -webkit-mask-image: linear-gradient(#000 50%, transparent); mask-image: linear-gradient(#000 50%, transparent); }
+.foot-hud::before { bottom: 0; top: -16px; background: linear-gradient(rgba(240, 240, 245, 0), rgba(240, 240, 245, 0.7));
+  -webkit-mask-image: linear-gradient(transparent, #000 50%); mask-image: linear-gradient(transparent, #000 50%); }
+
+.brand { justify-self: start; display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+.brand .mk { width: 36px; height: 36px; flex: none; }
+.brand .lbl { font-size: 1.14rem; font-weight: 600; letter-spacing: -0.03em; white-space: nowrap; }
+.brand .lbl b { color: var(--orange); font-weight: 600; }
+
+.glass { background: rgba(247, 246, 250, 0.3); border: 1px solid rgba(255, 255, 255, 0.66);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3); }
+.nav { position: relative; isolation: isolate; display: flex; align-items: center; gap: 2px; padding: 5px; border-radius: 999px; }
+.nav a { position: relative; text-decoration: none; padding: 8px 16px; border-radius: 999px; white-space: nowrap;
+  font-size: 0.94rem; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); transition: color 0.25s; }
+.nav a.go { margin-left: 4px; background: var(--ink); color: #fff; transition: background 0.25s; }
+.nav a.go:hover { background: #000; }
+.nav .blob { position: absolute; z-index: -1; top: 5px; bottom: 5px; left: 0; width: var(--bw, 0px); border-radius: 999px; opacity: 0;
+  transform: translateX(var(--bx, 0px)); background: rgba(255, 255, 255, 0.78);
+  transition: transform 0.55s var(--spring), width 0.55s var(--spring), opacity 0.3s; }
+.nav .blob.on { opacity: 1; }
+.geo { justify-self: end; text-align: right; color: var(--ink-soft); font-size: 0.8rem; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.geo span { color: var(--ink); font-weight: 500; }
+.menu-btn { display: none; }
+
+.corners i { position: fixed; z-index: 19; width: 15px; height: 15px; pointer-events: none; }
+.corners i::before, .corners i::after { content: ""; position: absolute; background: var(--ink); opacity: 0.45; }
+.corners i::before { left: 7px; top: 0; width: 1px; height: 15px; }
+.corners i::after { top: 7px; left: 0; height: 1px; width: 15px; }
+.corners i:nth-child(1) { top: 76px; left: calc(var(--gut) - 7px); }
+.corners i:nth-child(2) { top: 76px; right: calc(var(--gut) - 7px); }
+.corners i:nth-child(3) { bottom: 50px; left: calc(var(--gut) - 7px); }
+.corners i:nth-child(4) { bottom: 50px; right: calc(var(--gut) - 7px); }
+
+.foot-hud { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: center;
+  padding: 14px var(--gut) 16px; font-size: 0.8rem; color: var(--ink-soft); pointer-events: none; font-variant-numeric: tabular-nums; }
+.foot-hud .sec b { color: var(--ink); font-weight: 600; }
+.foot-hud .bar { width: 140px; height: 2px; border-radius: 2px; background: rgba(27, 29, 31, 0.14); overflow: hidden; }
+.foot-hud .bar i { display: block; height: 100%; background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--p, 0)); }
+
+/* ---------- shared pieces ---------- */
+section { position: relative; padding: clamp(96px, 14vh, 150px) var(--gut); }
+.wrap { max-width: 1240px; margin: 0 auto; }
+.sheet { background: var(--glass); border: 1px solid var(--edge); border-radius: 22px;
+  -webkit-backdrop-filter: blur(22px) saturate(1.28); backdrop-filter: blur(22px) saturate(1.28);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 24px 60px -36px rgba(40, 44, 62, 0.35); }
+.head { margin-bottom: 30px; }
+.head h2 { font-size: var(--t3); }
+.odot { display: inline-block; width: 0.16em; height: 0.16em; margin-left: 0.07em; border-radius: 50%; background: var(--orange); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; padding: 0 20px; border-radius: 999px;
+  border: 1px solid transparent; font-size: 0.98rem; font-weight: 500; letter-spacing: -0.01em; text-decoration: none; cursor: pointer;
+  transition: background 0.25s, box-shadow 0.25s; }
+.btn-ink { background: var(--ink); color: #fff; }
+.btn-ink:hover { background: #000; }
+.btn-ink .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 10px var(--orange); }
+.btn.glass { color: var(--ink); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.btn.glass:hover { background: rgba(255, 255, 255, 0.6); }
+
+/* ---------- hero ---------- */
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: space-between; padding-top: 150px; padding-bottom: 88px; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(70% 80% at 18% 46%, rgba(246, 246, 250, 0.6), rgba(246, 246, 250, 0) 70%); }
+.hero-copy { max-width: 780px; }
+.hero h1 { width: min(660px, 47vw); margin-bottom: 34px; }
+.lbl-logo { width: 100%; height: auto; overflow: visible; }
+.lbl-logo .ink, .lbl-logo .sub, .lbl-logo .candles rect { fill: var(--ink); }
+.lbl-logo .acc { fill: var(--orange); }
+.lbl-logo .deck { transform-origin: 270px 278px; transform: scaleX(0); transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s; }
+.lbl-logo .cd { transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(0); transition: transform 0.5s cubic-bezier(0.3, 1.5, 0.5, 1); transition-delay: calc(var(--i) * 40ms + 0.25s); }
+.is-ready .lbl-logo .deck { transform: none; }
+.is-ready .lbl-logo .cd { transform: none; }
+.hero .lead { font-size: clamp(1.06rem, 0.9rem + 0.45vw, 1.32rem); line-height: 1.45; max-width: 40ch; }
+.hero .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+
+/* ---------- the challenge: one frosted panel, the film first, then the brief ---------- */
+.ex-sec { --fw: min(100%, calc((100svh - 340px) * 1.7778)); padding-top: clamp(88px, 11vh, 120px); }
+.ex-sec .head { margin-bottom: 22px; }
+.film { width: var(--fw); margin: 0 auto; }
+.screen { position: relative; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #FFFFFF; cursor: pointer; }
+.screen video { width: 100%; height: 100%; object-fit: cover; }
+.screen .play { position: absolute; inset: auto auto 22px 22px; display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px 10px 12px;
+  border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.8); background: rgba(27, 29, 31, 0.8); color: #fff; cursor: pointer;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 0.94rem; font-weight: 500; transition: opacity 0.3s; }
+.screen .play svg { width: 26px; height: 26px; }
+.screen.is-live .play { opacity: 0; pointer-events: none; }
+.ctrl { display: flex; align-items: center; gap: 16px; padding: 13px 8px 3px; font-size: 0.86rem; }
+.ctrl button { border: 0; background: none; padding: 6px 2px; cursor: pointer; font-weight: 500; transition: color 0.2s; }
+.ctrl button:hover { color: var(--orange-ink); }
+.ctrl .time { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.ctrl .track { flex: 1; height: 22px; display: flex; align-items: center; cursor: pointer; }
+.ctrl .track i { display: block; height: 2px; width: 100%; background: var(--line); position: relative; }
+.ctrl .track i b { position: absolute; left: 0; top: -1px; height: 4px; width: 0; background: var(--ink); border-radius: 2px; }
+
+.ex { padding: var(--pad); border-radius: 30px; }
+.ex .film + .ex-top { margin-top: clamp(30px, 4vw, 52px); padding-top: clamp(30px, 4vw, 52px); border-top: 1px solid var(--line); }
+.ex-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+.ex-top .lead { font-size: var(--t2); font-weight: 500; letter-spacing: -0.035em; line-height: 1.12; }
+.ex-top p + p { color: var(--ink-soft); padding-top: 6px; }
+.steps { list-style: none; padding: 0; margin: clamp(30px, 4vw, 52px) 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 clamp(24px, 3vw, 44px); border-top: 1px solid var(--line); }
+.steps li { padding: 22px 0 0; }
+.steps .k { font-size: var(--t-1); font-weight: 600; color: var(--ink-soft); }
+.steps h3 { font-size: var(--t2); margin: 8px 0 10px; }
+.steps p { color: var(--ink-soft); max-width: 34ch; }
+
+.score { margin-top: clamp(30px, 4vw, 52px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 44px);
+  padding: clamp(20px, 2.6vw, 34px); border-radius: 18px; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--edge); }
+.score h3 { font-size: var(--t0); letter-spacing: -0.01em; font-weight: 600; }
+.formula { font-size: clamp(1.2rem, 0.8rem + 1.1vw, 1.7rem); letter-spacing: -0.035em; line-height: 1.25; margin: 10px 0 14px; font-weight: 500; }
+.formula .op { color: var(--orange); }
+.formula .nw { white-space: nowrap; }
+.score .note { color: var(--ink-soft); font-size: 0.94rem; }
+.calc { display: grid; gap: 14px; align-content: start; }
+.calc label { display: grid; grid-template-columns: 104px 1fr 84px; align-items: center; gap: 12px; font-size: 0.94rem; }
+.calc output { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.calc input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: none; cursor: pointer; }
+.calc input[type=range]::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(90deg, var(--ink) var(--p, 50%), var(--line) 0); }
+.calc input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+.calc input[type=range]::-moz-range-progress { height: 2px; background: var(--ink); }
+.calc input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -7px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); }
+.calc input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); }
+.calc .total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: 14px; margin-top: 4px; }
+.calc .total b { font-size: clamp(2.1rem, 1.4rem + 1.6vw, 3rem); font-weight: 500; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+.meter-row { display: flex; align-items: center; gap: 12px; font-size: var(--t-1); color: var(--ink-soft); }
+.meter { flex: 1; height: 6px; border-radius: 6px; background: rgba(27, 29, 31, 0.1); overflow: hidden; }
+.meter i { display: block; height: 100%; width: 100%; border-radius: inherit; background: var(--orange); transform-origin: 0 50%; transform: scaleX(var(--s, 0.5)); transition: transform 0.25s; }
+
+.reveals { margin-top: clamp(30px, 4vw, 52px); display: grid; grid-template-columns: minmax(0, 0.8fr) repeat(2, minmax(0, 1fr)); gap: 26px 36px; }
+.reveals h3 { font-size: var(--t2); line-height: 1.05; grid-row: span 2; }
+.reveals article h4 { margin: 0 0 6px; font-size: var(--t0); font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; }
+.reveals article p { color: var(--ink-soft); }
+.facts { margin: clamp(30px, 4vw, 52px) 0 0; display: grid; grid-template-columns: repeat(4, 1fr); align-items: start; border-top: 1px solid var(--line); padding-top: 20px; }
+.facts div { padding-right: 18px; }
+.facts dt { font-size: var(--t-1); font-weight: 600; color: var(--ink-soft); }
+.facts dd { margin: 4px 0 0; font-weight: 500; max-width: 30ch; }
+.ex .cta { margin-top: 28px; }
+
+/* ---------- facilitator ---------- */
+.fac { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); padding: var(--pad); }
+.fac .k { font-size: var(--t-1); font-weight: 600; color: var(--ink-soft); }
+.fac h2 { font-size: var(--t3); margin: 0 0 10px; }
+.fac .role { color: var(--ink-soft); margin-bottom: 22px; }
+.fac .bio { max-width: 52ch; }
+.fac ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.fac li { padding: 16px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr); gap: 16px; }
+.fac li b { font-weight: 600; }
+.fac li span { color: var(--ink-soft); }
+
+/* ---------- booking ---------- */
+.book { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr); }
+.book .fields { padding: var(--pad); display: grid; gap: 28px; align-content: start; }
+.field { position: relative; }
+.field > .lab, .field legend { display: block; font-size: var(--t-1); font-weight: 600; color: var(--ink-soft); margin-bottom: 10px; padding: 0; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.55); }
+.stepper button { width: 46px; height: 46px; border: 0; background: none; font-size: 1.25rem; cursor: pointer; border-radius: 50%; transition: background 0.2s; }
+.stepper button:hover { background: rgba(255, 255, 255, 0.85); }
+.stepper input { width: 70px; text-align: center; border: 0; background: none; font-size: 1.4rem; font-weight: 500; letter-spacing: -0.02em; -moz-appearance: textfield; font-variant-numeric: tabular-nums; }
+.stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.hint { font-size: var(--t-1); color: var(--ink-soft); margin-top: 8px; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choices label { position: relative; }
+.choices input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.choices span { display: block; padding: 10px 16px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.5); cursor: pointer;
+  font-weight: 500; line-height: 1.35; transition: background 0.2s, border-color 0.2s; }
+.choices span:hover { background: rgba(255, 255, 255, 0.85); }
+.choices span small { display: block; color: var(--ink-soft); font-size: 0.8rem; font-weight: 400; }
+.choices input:checked + span { background: var(--ink); color: #fff; border-color: var(--ink); }
+.choices input:checked + span small { color: rgba(255, 255, 255, 0.72); }
+.choices.tod { margin-top: 10px; }
+.choices input:focus-visible + span { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* the preferred date: a field that opens a filleted calendar */
+.date-wrap { position: relative; max-width: 360px; }
+.date-btn { display: inline-flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; max-width: 360px; min-height: 50px;
+  padding: 0 14px 0 18px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.55); cursor: pointer;
+  font-weight: 500; text-align: left; transition: background 0.2s, border-color 0.2s; }
+.date-btn:hover, .date-btn[aria-expanded="true"] { background: rgba(255, 255, 255, 0.9); border-color: rgba(27, 29, 31, 0.22); }
+.date-btn .ph { color: var(--ink-soft); font-weight: 400; }
+.date-btn svg { width: 20px; height: 20px; flex: none; }
+.cal { position: absolute; z-index: 30; top: calc(100% + 10px); left: 0; width: 336px; max-width: calc(100vw - 2 * var(--gut)); padding: 14px;
+  border-radius: 26px; background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6); backdrop-filter: blur(24px) saturate(1.6);
+  box-shadow: inset 0 1px 0 #fff, 0 30px 60px -24px rgba(28, 34, 58, 0.45), 0 4px 14px -6px rgba(28, 34, 58, 0.18);
+  transform-origin: 30px 0; transition: opacity 0.22s, transform 0.32s var(--spring), visibility 0s; }
+.cal[hidden] { display: block; opacity: 0; visibility: hidden; transform: translateY(-6px) scale(0.97); pointer-events: none;
+  transition: opacity 0.22s, transform 0.32s var(--spring), visibility 0s linear 0.22s; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; padding: 2px 2px 10px; }
+.cal-head p { font-weight: 600; letter-spacing: -0.02em; }
+.cal-nav { width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(27, 29, 31, 0.05); cursor: pointer; display: grid; place-items: center; transition: background 0.2s; }
+.cal-nav:hover { background: rgba(27, 29, 31, 0.1); }
+.cal-nav:disabled { opacity: 0.3; cursor: default; background: rgba(27, 29, 31, 0.05); }
+.cal-nav svg { width: 16px; height: 16px; }
+.cal-dow, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.cal-dow span { font-size: 0.74rem; font-weight: 600; color: var(--ink-soft); padding: 4px 0 6px; }
+.cal-grid button { aspect-ratio: 1; width: 100%; border: 0; border-radius: 50%; background: none; cursor: pointer; font-size: 0.92rem; font-weight: 500;
+  font-variant-numeric: tabular-nums; transition: background 0.18s, color 0.18s; }
+.cal-grid button:hover:not(:disabled) { background: rgba(27, 29, 31, 0.07); }
+.cal-grid button:disabled { color: rgba(27, 29, 31, 0.26); cursor: default; font-weight: 400; }
+.cal-grid button.is-sel { background: var(--ink); color: #fff; }
+.cal-grid button.is-first:not(.is-sel) { box-shadow: inset 0 0 0 1px rgba(27, 29, 31, 0.25); }
+
+.estimate { padding: var(--pad); background: rgba(27, 29, 31, 0.9); color: #fff; border-radius: 0 21px 21px 0;
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+.est-in { position: sticky; top: 110px; display: flex; flex-direction: column; gap: 18px; }
+.estimate h3 { font-size: var(--t0); font-weight: 600; letter-spacing: -0.01em; }
+.estimate .sum { font-size: clamp(2.5rem, 1.6rem + 2.2vw, 3.8rem); letter-spacing: -0.05em; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1; }
+.estimate .sum small { font-size: 0.94rem; letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.7); margin-left: 8px; }
+.estimate dl { margin: 0; display: grid; gap: 8px; font-size: 0.92rem; }
+.estimate dl div { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); padding-bottom: 8px; }
+.estimate dt { color: rgba(255, 255, 255, 0.72); }
+.estimate dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+.estimate .terms { font-size: var(--t-1); color: rgba(255, 255, 255, 0.72); }
+.estimate .btn-ink { background: #fff; color: var(--ink); margin-top: 8px; transition: box-shadow 0.2s; }
+.estimate .btn-ink:hover { background: #fff; box-shadow: inset 0 0 0 1.5px var(--orange); }
+
+/* ---------- footer ---------- */
+.foot { padding: clamp(110px, 18vh, 200px) var(--gut) 110px; }
+.foot .big { font-size: var(--t4); letter-spacing: -0.05em; line-height: 0.95; font-weight: 500; max-width: 14ch; }
+.foot .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; margin-top: 40px; font-size: var(--t-1); color: var(--ink-soft); align-items: flex-start; }
+.foot details { max-width: 640px; }
+.foot summary { cursor: pointer; color: var(--ink); font-weight: 500; }
+.foot details ol { margin: 14px 0 0; padding-left: 20px; display: grid; gap: 8px; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 1000px) {
+  .hud { grid-template-columns: 1fr auto; }
+  .geo { display: none; }
+  .ex-top, .score, .fac, .book { grid-template-columns: 1fr; }
+  .estimate { border-radius: 0 0 21px 21px; }
+  .reveals { grid-template-columns: 1fr 1fr; }
+  .reveals h3 { grid-column: 1 / -1; grid-row: auto; }
+  .facts { grid-template-columns: 1fr 1fr; gap: 16px; }
+}
+@media (max-width: 760px) {
+  body { font-size: 1rem; }
+  .brand .mk { width: 32px; height: 32px; }
+  .brand .lbl { font-size: 1.02rem; }
+  .menu-btn { display: inline-flex; align-items: center; min-height: 42px; padding: 0 18px; border-radius: 999px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
+  .nav { position: fixed; top: 70px; right: var(--gut); flex-direction: column; align-items: stretch; border-radius: 24px; padding: 8px; min-width: 230px;
+    background: rgba(248, 248, 251, 0.86); opacity: 0; visibility: hidden; transform: translateY(-8px) scale(0.98); transform-origin: 90% 0;
+    transition: opacity 0.22s, transform 0.32s var(--spring), visibility 0.22s; }
+  .nav.open { opacity: 1; visibility: visible; transform: none; }
+  .nav a { padding: 12px 16px; }
+  .nav a.go { margin: 4px 0 0; text-align: center; }
+  .nav .blob { display: none; }
+  .corners i:nth-child(n) { display: none; }
+  .foot-hud { display: none; }
+  .est-in { position: static; }
+  .hero { padding-top: 120px; padding-bottom: 76px; }
+  .hero h1 { width: 100%; margin-bottom: 26px; }
+  .ex-sec { --fw: min(100%, calc((100svh - 230px) * 0.5625)); }
+  .screen { aspect-ratio: 9 / 16; border-radius: 14px; }
+  .ex { border-radius: 24px; }
+  .screen .play { inset: auto auto 12px 12px; padding: 8px 14px 8px 9px; font-size: 0.86rem; }
+  .ctrl { flex-wrap: wrap; gap: 10px 14px; }
+  .ctrl .track { flex-basis: 100%; order: 3; }
+  .steps { grid-template-columns: 1fr; }
+  .steps li + li { border-top: 1px solid var(--line); }
+  .steps li { padding-bottom: 18px; }
+  .reveals { grid-template-columns: 1fr; }
+  .calc label { grid-template-columns: 88px 1fr 76px; }
+  .fac li { grid-template-columns: 1fr; gap: 2px; }
+  .facts { grid-template-columns: 1fr; }
+  .cal { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .nav .blob, .cal, .nav, .meter i { transition: none; }
+  .lbl-logo .deck, .lbl-logo .cd { transform: none; transition: none; }
+}
+</style>
+</head>
+<body>
+<a class="sr" href="#challenge">Skip to content</a>
+
+<div class="bg" aria-hidden="true">
+  <picture>
+    <source media="(max-width: 760px) and (orientation: portrait)" srcset="media/model06-portrait.jpg">
+    <img src="media/model06-2400.jpg" srcset="media/model06-1400.jpg 1400w, media/model06-2400.jpg 2400w" sizes="100vw" alt="" id="bg-img" fetchpriority="high">
+  </picture>
+  <div class="veil"></div>
+</div>
+
+<header class="hud">
+  <a class="brand" href="#top" aria-label="Load-Bearing Legends, back to top"><svg class="mk" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48.50" fill="rgba(255,255,255,0.45)" stroke="#1B1D1F" stroke-width="3"/><path fill="#1B1D1F" transform="translate(19.860 62.313) scale(0.012024)" d="M178 0V-2048H611V-357H1489V0Z M1719.68 0V-2048H2539.6800000000003Q2765.6800000000003 -2048 2916.6800000000003 -1981.0Q3067.6800000000003 -1914 3143.6800000000003 -1795.5Q3219.6800000000003 -1677 3219.6800000000003 -1523Q3219.6800000000003 -1403 3171.6800000000003 -1312.5Q3123.6800000000003 -1222 3040.1800000000003 -1164.5Q2956.6800000000003 -1107 2849.6800000000003 -1083V-1063Q2966.6800000000003 -1058 3069.1800000000003 -997.0Q3171.6800000000003 -936 3235.6800000000003 -826.5Q3299.6800000000003 -717 3299.6800000000003 -566Q3299.6800000000003 -403 3219.1800000000003 -275.5Q3138.6800000000003 -148 2981.6800000000003 -74.0Q2824.6800000000003 0 2594.6800000000003 0ZM2152.6800000000003 -354H2505.6800000000003Q2686.6800000000003 -354 2769.6800000000003 -423.5Q2852.6800000000003 -493 2852.6800000000003 -609Q2852.6800000000003 -694 2811.6800000000003 -759.0Q2770.6800000000003 -824 2695.1800000000003 -861.0Q2619.6800000000003 -898 2515.6800000000003 -898H2152.6800000000003ZM2152.6800000000003 -1191H2473.6800000000003Q2562.6800000000003 -1191 2632.1800000000003 -1222.5Q2701.6800000000003 -1254 2742.1800000000003 -1312.0Q2782.6800000000003 -1370 2782.6800000000003 -1451Q2782.6800000000003 -1562 2704.1800000000003 -1630.0Q2625.6800000000003 -1698 2481.6800000000003 -1698H2152.6800000000003Z M3524.36 0V-2048H3957.36V-357H4835.360000000001V0Z"/></svg><span class="lbl"><b>L</b>oad-<b>B</b>earing <b>L</b>egends</span></a>
+  <button class="menu-btn glass" id="menu-btn" aria-expanded="false" aria-controls="nav">Menu</button>
+  <nav class="nav glass" id="nav" aria-label="Sections">
+    <span class="blob" id="blob" aria-hidden="true"></span>
+    <a href="#challenge">Challenge</a>
+    <a href="#facilitator">Facilitator</a>
+    <a href="#book" class="go">Book a session</a>
+  </nav>
+  <p class="geo">Hong Kong 22.28°N 114.16°E<br><span id="clock">HKT --:--</span></p>
+</header>
+<div class="corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="foot-hud" aria-hidden="true"><span class="sec"><b id="sec-n">01</b>/04 <span id="sec-t">Model</span></span><span class="bar"><i id="bar"></i></span></div>
+
+<main>
+  <section class="hero" id="top" data-sec="Model">
+    <div class="hero-copy">
+      <h1><svg class="lbl-logo" viewBox="190.0 30 1009.1 658.6" role="img" aria-labelledby="lbl-logo-t"><title id="lbl-logo-t">Load-Bearing Legends, team building and leadership</title><g class="candles"><rect class="deck" x="270" y="276.5" width="835" height="3"/><g class="cd" style="--i:0"><rect x="338.7" y="249" width="3.6" height="49"/><rect x="328.5" y="266" width="24" height="13"/></g><g class="cd" style="--i:1"><rect x="377.7" y="227" width="3.6" height="61"/><rect x="367.5" y="249" width="24" height="30"/></g><g class="cd" style="--i:2"><rect x="416.7" y="185" width="3.6" height="93"/><rect x="406.5" y="213" width="24" height="53"/></g><g class="cd" style="--i:3"><rect x="455.7" y="125" width="3.6" height="153"/><rect x="445.5" y="155" width="24" height="99"/></g><g class="cd" style="--i:4"><rect x="495.7" y="39" width="3.6" height="284"/><rect x="484.5" y="72" width="26" height="251"/></g><g class="cd" style="--i:5"><rect x="535.2" y="98" width="3.6" height="180"/><rect x="525.5" y="128" width="23" height="115"/></g><g class="cd" style="--i:6"><rect x="574.7" y="154" width="3.6" height="124"/><rect x="564.5" y="183" width="24" height="85"/></g><g class="cd" style="--i:7"><rect x="614.2" y="190" width="3.6" height="98"/><rect x="604.5" y="213" width="23" height="66"/></g><g class="cd" style="--i:8"><rect x="653.2" y="208" width="3.6" height="91"/><rect x="643.0" y="231" width="24" height="48"/></g><g class="cd" style="--i:9"><rect x="692.7" y="217" width="3.6" height="81"/><rect x="682.5" y="248" width="24" height="31"/></g><g class="cd" style="--i:10"><rect x="732.2" y="208" width="3.6" height="90"/><rect x="722.0" y="232" width="24" height="47"/></g><g class="cd" style="--i:11"><rect x="771.2" y="190" width="3.6" height="98"/><rect x="761.0" y="213" width="24" height="66"/></g><g class="cd" style="--i:12"><rect x="810.2" y="154" width="3.6" height="124"/><rect x="800.5" y="183" width="23" height="85"/></g><g class="cd" style="--i:13"><rect x="849.2" y="98" width="3.6" height="180"/><rect x="839.5" y="128" width="23" height="115"/></g><g class="cd" style="--i:14"><rect x="889.2" y="39" width="3.6" height="284"/><rect x="878.0" y="72" width="26" height="251"/></g><g class="cd" style="--i:15"><rect x="928.7" y="125" width="3.6" height="153"/><rect x="918.5" y="155" width="24" height="99"/></g><g class="cd" style="--i:16"><rect x="968.2" y="185" width="3.6" height="93"/><rect x="958.5" y="213" width="23" height="53"/></g><g class="cd" style="--i:17"><rect x="1006.7" y="226" width="3.6" height="62"/><rect x="996.0" y="245" width="25" height="34"/></g><g class="cd" style="--i:18"><rect x="1046.7" y="249" width="3.6" height="49"/><rect x="1036.5" y="266" width="24" height="13"/></g></g><path class="ink" d="M195.97285714285712 439.0V350.0H225.97857142857143V415.73285714285714H266.1557142857143V439.0ZM315.6142857142857 441.0342857142857Q304.68 441.0342857142857 295.46214285714285 437.6014285714286Q286.2442857142857 434.16857142857145 279.50571428571425 427.875Q272.76714285714286 421.58142857142855 269.0164285714286 413.0628571428571Q265.2657142857143 404.5442857142857 265.2657142857143 394.5Q265.2657142857143 384.3285714285714 269.0164285714286 375.87357142857144Q272.76714285714286 367.41857142857145 279.50571428571425 361.125Q286.2442857142857 354.83142857142855 295.46214285714285 351.3985714285714Q304.68 347.9657142857143 315.4871428571428 347.9657142857143Q326.4214285714286 347.9657142857143 335.5757142857143 351.3985714285714Q344.73 354.83142857142855 351.4685714285714 361.125Q358.20714285714286 367.41857142857145 361.95785714285716 375.87357142857144Q365.7085714285714 384.3285714285714 365.7085714285714 394.5Q365.7085714285714 404.5442857142857 361.95785714285716 413.0628571428571Q358.20714285714286 421.58142857142855 351.4685714285714 427.875Q344.73 434.16857142857145 335.5757142857143 437.6014285714286Q326.4214285714286 441.0342857142857 315.6142857142857 441.0342857142857ZM315.4871428571428 416.75Q319.68285714285713 416.75 323.30642857142857 415.2242857142857Q326.93 413.6985714285714 329.66357142857146 410.83785714285716Q332.39714285714285 407.97714285714284 333.92285714285714 403.845Q335.4485714285714 399.71285714285716 335.4485714285714 394.5Q335.4485714285714 389.28714285714284 333.92285714285714 385.155Q332.39714285714285 381.02285714285716 329.66357142857146 378.16214285714284Q326.93 375.3014285714286 323.30642857142857 373.7757142857143Q319.68285714285713 372.25 315.4871428571428 372.25Q311.2914285714286 372.25 307.66785714285714 373.7757142857143Q304.0442857142857 375.3014285714286 301.3107142857143 378.16214285714284Q298.57714285714286 381.02285714285716 297.0514285714286 385.155Q295.5257142857143 389.28714285714284 295.5257142857143 394.5Q295.5257142857143 399.71285714285716 297.0514285714286 403.845Q298.57714285714286 407.97714285714284 301.3107142857143 410.83785714285716Q304.0442857142857 413.6985714285714 307.66785714285714 415.2242857142857Q311.2914285714286 416.75 315.4871428571428 416.75ZM361.3857142857143 439.0 400.2914285714286 350.0H429.78857142857146L468.6942857142857 439.0H437.6714285714286L408.9371428571429 364.24H420.63428571428574L391.9 439.0ZM384.5257142857143 423.48857142857145 392.1542857142857 401.8742857142857H433.0942857142857L440.72285714285715 423.48857142857145ZM467.93142857142857 439.0V350.0H511.79571428571427Q526.6714285714286 350.0 537.9871428571428 355.40357142857147Q549.3028571428571 360.8071428571429 555.66 370.7242857142857Q562.0171428571429 380.64142857142855 562.0171428571429 394.37285714285713Q562.0171428571429 408.2314285714286 555.66 418.21214285714285Q549.3028571428571 428.1928571428571 537.9871428571428 433.59642857142853Q526.6714285714286 439.0 511.79571428571427 439.0ZM497.9371428571428 415.60571428571427H510.52428571428567Q516.8814285714285 415.60571428571427 521.6492857142857 413.19Q526.4171428571428 410.7742857142857 529.0871428571429 406.0064285714286Q531.7571428571429 401.23857142857145 531.7571428571429 394.37285714285713Q531.7571428571429 387.63428571428574 529.0871428571429 382.93Q526.4171428571428 378.2257142857143 521.6492857142857 375.81Q516.8814285714285 373.39428571428573 510.52428571428567 373.39428571428573H497.9371428571428ZM565.8314285714285 413.0628571428571V391.4485714285714H603.9742857142858V413.0628571428571ZM611.3485714285714 439.0V350.0H658.9Q677.3357142857143 350.0 686.1085714285714 356.54785714285714Q694.8814285714285 363.0957142857143 694.8814285714285 373.26714285714286Q694.8814285714285 380.0057142857143 691.1307142857142 385.28214285714284Q687.38 390.55857142857144 680.26 393.61Q673.14 396.6614285714286 662.7142857142857 396.6614285714286L665.2571428571428 389.79571428571427Q675.6828571428571 389.79571428571427 683.2478571428571 392.72Q690.8128571428571 395.64428571428573 694.9449999999999 401.175Q699.0771428571428 406.7057142857143 699.0771428571428 414.4614285714286Q699.0771428571428 426.0314285714286 689.4778571428571 432.5157142857143Q679.8785714285714 439.0 661.4428571428571 439.0ZM640.8457142857143 418.0214285714286H658.9Q663.8585714285714 418.0214285714286 666.337857142857 416.2414285714286Q668.8171428571428 414.4614285714286 668.8171428571428 411.0285714285714Q668.8171428571428 407.5957142857143 666.337857142857 405.8157142857143Q663.8585714285714 404.0357142857143 658.9 404.0357142857143H638.8114285714286V384.20142857142855H654.8314285714285Q659.9171428571428 384.20142857142855 662.2692857142856 382.485Q664.6214285714285 380.7685714285714 664.6214285714285 377.59000000000003Q664.6214285714285 374.2842857142857 662.2692857142856 372.63142857142856Q659.9171428571428 370.9785714285714 654.8314285714285 370.9785714285714H640.8457142857143ZM731.4985714285715 383.0571428571429H771.1671428571428V404.6714285714286H731.4985714285715ZM733.5328571428572 416.36857142857144H778.0328571428572V439.0H704.0357142857143V350.0H776.38V372.63142857142856H733.5328571428572ZM774.3457142857143 439.0 813.2514285714286 350.0H842.7485714285715L881.6542857142857 439.0H850.6314285714286L821.8971428571429 364.24H833.5942857142858L804.86 439.0ZM797.4857142857143 423.48857142857145 805.1142857142858 401.8742857142857H846.0542857142857L853.6828571428572 423.48857142857145ZM880.8914285714286 439.0V350.0H923.7385714285714Q936.1985714285714 350.0 945.2892857142857 354.06857142857143Q954.38 358.13714285714286 959.3385714285714 365.70214285714286Q964.2971428571428 373.26714285714286 964.2971428571428 383.5657142857143Q964.2971428571428 393.8642857142857 959.3385714285714 401.3021428571428Q954.38 408.74 945.2892857142857 412.68142857142857Q936.1985714285714 416.62285714285713 923.7385714285714 416.62285714285713H897.5471428571428L910.8971428571429 404.29V439.0ZM934.1642857142857 439.0 912.2957142857143 406.5785714285714H944.0814285714285L966.2042857142858 439.0ZM910.8971428571429 407.5957142857143 897.5471428571428 393.99142857142857H921.8314285714285Q928.0614285714286 393.99142857142857 931.0492857142857 391.1942857142857Q934.0371428571428 388.39714285714285 934.0371428571428 383.5657142857143Q934.0371428571428 378.7342857142857 931.0492857142857 375.9371428571428Q928.0614285714286 373.14 921.8314285714285 373.14H897.5471428571428L910.8971428571429 359.5357142857143ZM970.0185714285715 439.0V350.0H1000.0242857142857V439.0ZM1008.9242857142857 439.0V350.0H1033.59L1078.8528571428571 404.16285714285715H1067.4099999999999V350.0H1096.652857142857V439.0H1071.9871428571428L1026.7242857142858 384.83714285714285H1038.1671428571428V439.0ZM1151.7057142857143 441.0342857142857Q1140.8985714285714 441.0342857142857 1131.807857142857 437.66499999999996Q1122.7171428571428 434.29571428571427 1116.0421428571428 428.0657142857143Q1109.3671428571429 421.8357142857143 1105.6799999999998 413.31714285714287Q1101.992857142857 404.79857142857145 1101.992857142857 394.5Q1101.992857142857 384.20142857142855 1105.6799999999998 375.68285714285713Q1109.3671428571429 367.1642857142857 1116.1057142857144 360.9342857142857Q1122.8442857142857 354.70428571428573 1132.0621428571428 351.33500000000004Q1141.28 347.9657142857143 1152.3414285714284 347.9657142857143Q1165.5642857142857 347.9657142857143 1175.9264285714285 352.4157142857143Q1186.2885714285712 356.86571428571426 1193.0271428571427 365.13L1173.8285714285714 382.04Q1169.6328571428571 377.2085714285714 1164.7378571428571 374.7292857142857Q1159.8428571428572 372.25 1153.8671428571429 372.25Q1148.9085714285713 372.25 1144.9035714285715 373.7757142857143Q1140.8985714285714 375.3014285714286 1138.1014285714286 378.2257142857143Q1135.3042857142857 381.15 1133.7785714285715 385.2185714285714Q1132.252857142857 389.28714285714284 1132.252857142857 394.5Q1132.252857142857 399.4585714285714 1133.7785714285715 403.5907142857143Q1135.3042857142857 407.72285714285715 1138.1014285714286 410.64714285714285Q1140.8985714285714 413.57142857142856 1144.7764285714284 415.1607142857143Q1148.6542857142856 416.75 1153.4857142857143 416.75Q1158.5714285714284 416.75 1163.402857142857 415.03357142857146Q1168.2342857142855 413.31714285714287 1173.7014285714286 409.12142857142857L1190.4842857142855 429.7185714285714Q1182.3471428571427 435.1857142857143 1171.9214285714284 438.11Q1161.4957142857143 441.0342857142857 1151.7057142857143 441.0342857142857ZM1164.4199999999998 425.9042857142857V392.0842857142857H1190.4842857142855V429.7185714285714Z"/><path class="acc" d="M203.20000000000002 607.0V467.0H250.4V570.4H313.6V607.0ZM368.6 519.0H431.0V553.0H368.6ZM371.8 571.4H441.8V607.0H325.4V467.0H439.2V502.6H371.8ZM531.4000000000001 610.2Q514.4000000000001 610.2 500.1000000000001 604.9000000000001Q485.80000000000007 599.6 475.30000000000007 589.8Q464.8 580.0 459.0 566.6Q453.20000000000005 553.2 453.20000000000005 537.0Q453.20000000000005 520.8 459.0 507.4Q464.8 494.0 475.40000000000003 484.2Q486.00000000000006 474.4 500.5 469.09999999999997Q515.0 463.79999999999995 532.4000000000001 463.79999999999995Q553.2 463.79999999999995 569.5 470.79999999999995Q585.8000000000001 477.79999999999995 596.4000000000001 490.8L566.2 517.4Q559.6 509.8 551.9000000000001 505.9Q544.2 502.0 534.8000000000001 502.0Q527.0 502.0 520.7 504.4Q514.4000000000001 506.8 510.00000000000006 511.4Q505.6 516.0 503.20000000000005 522.4Q500.80000000000007 528.8 500.80000000000007 537.0Q500.80000000000007 544.8 503.20000000000005 551.3Q505.6 557.8 510.00000000000006 562.4Q514.4000000000001 567.0 520.5 569.5Q526.6 572.0 534.2 572.0Q542.2 572.0 549.8000000000001 569.3Q557.4000000000001 566.6 566.0 560.0L592.4000000000001 592.4Q579.6 601.0 563.2 605.6Q546.8000000000001 610.2 531.4000000000001 610.2ZM551.4000000000001 586.4V533.2H592.4000000000001V592.4ZM654.6 519.0H717.0V553.0H654.6ZM657.8 571.4H727.8V607.0H611.4V467.0H725.2V502.6H657.8ZM744.8000000000001 607.0V467.0H783.6000000000001L854.8000000000001 552.2H836.8000000000001V467.0H882.8000000000001V607.0H844.0000000000001L772.8000000000001 521.8H790.8000000000001V607.0ZM904.4 607.0V467.0H973.4Q996.8 467.0 1014.6 475.5Q1032.4 484.0 1042.4 499.6Q1052.4 515.2 1052.4 536.8Q1052.4 558.6 1042.4 574.3Q1032.4 590.0 1014.6 598.5Q996.8 607.0 973.4 607.0ZM951.6 570.2H971.4Q981.4 570.2 988.9 566.4000000000001Q996.4 562.6 1000.5999999999999 555.1Q1004.8 547.6 1004.8 536.8Q1004.8 526.2 1000.5999999999999 518.8Q996.4 511.4 988.9 507.6Q981.4 503.8 971.4 503.8H951.6ZM1120.6 610.2Q1103.0 610.2 1086.6 606.2Q1070.2 602.2 1059.6 595.8L1074.8 561.4Q1084.8 567.2 1097.1 570.7Q1109.4 574.2 1121.0 574.2Q1127.8 574.2 1131.6999999999998 573.3Q1135.6 572.4 1137.4 570.7Q1139.2 569.0 1139.2 566.6Q1139.2 562.8 1135.0 560.5999999999999Q1130.8 558.4 1123.9 556.9Q1117.0 555.4 1108.8 553.7Q1100.6 552.0 1092.3 549.2Q1084.0 546.4 1077.1 541.8Q1070.2 537.2 1066.0 529.7Q1061.8 522.2 1061.8 511.0Q1061.8 498.0 1069.1 487.3Q1076.4 476.6 1090.9 470.2Q1105.4 463.79999999999995 1127.0 463.79999999999995Q1141.2 463.79999999999995 1155.0 466.79999999999995Q1168.8 469.79999999999995 1179.8 476.0L1165.6 510.2Q1155.2 505.0 1145.5 502.4Q1135.8 499.8 1126.6 499.8Q1119.8 499.8 1115.8 501.0Q1111.8 502.2 1110.1 504.2Q1108.4 506.2 1108.4 508.6Q1108.4 512.2 1112.6 514.3Q1116.8 516.4 1123.6999999999998 517.8Q1130.6 519.2 1138.9 520.8Q1147.2 522.4 1155.4 525.2Q1163.6 528.0 1170.5 532.6Q1177.4 537.2 1181.6 544.6Q1185.8 552.0 1185.8 563.0Q1185.8 575.8 1178.5 586.5Q1171.2 597.2 1156.8000000000002 603.7Q1142.4 610.2 1120.6 610.2Z"/><path class="sub" d="M342.32342857142856 680.6V654.6788571428572H332.17485714285715V651.0H356.65828571428574V654.6788571428572H346.5097142857143V680.6ZM366.6377142857143 663.7702857142857H381.86057142857146V667.3645714285715H366.6377142857143ZM367.01828571428575 676.9211428571429H384.27085714285715V680.6H362.7897142857143V651.0H383.67885714285717V654.6788571428572H367.01828571428575ZM388.1611428571429 680.6 401.5657142857143 651.0H405.75200000000007L419.1988571428572 680.6H414.7588571428572L402.79200000000003 653.368H404.4834285714286L392.51657142857147 680.6ZM393.86971428571434 673.2 395.0114285714286 669.8171428571429H411.672L412.89828571428575 673.2ZM425.11885714285717 680.6V651.0H428.58628571428574L441.86400000000003 673.3691428571428H440.00342857142857L453.112 651.0H456.5794285714286L456.6217142857143 680.6H452.56228571428574L452.52000000000004 657.3851428571429H453.49257142857147L441.82171428571434 677.0057142857144H439.8765714285715L428.1211428571429 657.3851428571429H429.1782857142857V680.6ZM479.9211428571429 680.6V651.0H493.1988571428572Q498.31542857142864 651.0 501.0640000000001 653.0508571428571Q503.81257142857146 655.1017142857143 503.81257142857146 658.6537142857143Q503.81257142857146 661.0640000000001 502.73428571428576 662.7131428571429Q501.65600000000006 664.3622857142857 499.83771428571436 665.2502857142857Q498.01942857142865 666.1382857142858 495.9051428571429 666.1382857142858L496.6662857142858 664.8697142857143Q499.2034285714286 664.8697142857143 501.1485714285715 665.7577142857143Q503.0937142857143 666.6457142857143 504.23542857142866 668.3582857142858Q505.3771428571429 670.0708571428572 505.3771428571429 672.6080000000001Q505.3771428571429 676.4137142857143 502.5228571428572 678.5068571428571Q499.6685714285715 680.6 494.0445714285715 680.6ZM484.14971428571437 677.1748571428571H493.87542857142864Q497.3851428571429 677.1748571428571 499.24571428571437 675.9908571428572Q501.1062857142858 674.8068571428572 501.1062857142858 672.2697142857143Q501.1062857142858 669.6902857142858 499.24571428571437 668.5062857142857Q497.3851428571429 667.3222857142857 493.87542857142864 667.3222857142857H483.7691428571429V663.8971428571429H492.81828571428576Q496.03200000000004 663.8971428571429 497.80800000000005 662.7131428571429Q499.58400000000006 661.5291428571429 499.58400000000006 659.1611428571429Q499.58400000000006 656.7931428571429 497.80800000000005 655.6091428571428Q496.03200000000004 654.4251428571429 492.81828571428576 654.4251428571429H484.14971428571437ZM525.7165714285715 680.9382857142857Q519.8811428571429 680.9382857142857 516.5405714285714 677.5977142857143Q513.2 674.2571428571429 513.2 667.8297142857143V651.0H517.4285714285714V667.6605714285714Q517.4285714285714 672.6080000000001 519.6062857142858 674.8914285714286Q521.7840000000001 677.1748571428571 525.7588571428572 677.1748571428571Q529.7760000000001 677.1748571428571 531.9537142857143 674.8914285714286Q534.1314285714286 672.6080000000001 534.1314285714286 667.6605714285714V651.0H538.2331428571429V667.8297142857143Q538.2331428571429 674.2571428571429 534.9137142857144 677.5977142857143Q531.5942857142858 680.9382857142857 525.7165714285715 680.9382857142857ZM548.4240000000001 680.6V651.0H552.6525714285715V680.6ZM563.0548571428573 680.6V651.0H567.2834285714287V676.9211428571429H583.3097142857143V680.6ZM589.6948571428572 680.6V651.0H602.1691428571429Q606.9051428571429 651.0 610.5205714285714 652.8605714285715Q614.1360000000001 654.7211428571429 616.1445714285715 658.0617142857143Q618.1531428571429 661.4022857142858 618.1531428571429 665.8000000000001Q618.1531428571429 670.1977142857143 616.1445714285715 673.5382857142857Q614.1360000000001 676.8788571428572 610.5205714285714 678.7394285714286Q606.9051428571429 680.6 602.1691428571429 680.6ZM593.9234285714286 676.9211428571429H601.9154285714286Q605.5942857142858 676.9211428571429 608.2794285714286 675.5257142857142Q610.9645714285715 674.1302857142857 612.4445714285714 671.6142857142858Q613.9245714285714 669.0982857142858 613.9245714285714 665.8000000000001Q613.9245714285714 662.4594285714286 612.4445714285714 659.9645714285714Q610.9645714285715 657.4697142857143 608.2794285714286 656.0742857142857Q605.5942857142858 654.6788571428572 601.9154285714286 654.6788571428572H593.9234285714286ZM626.1451428571429 680.6V651.0H630.3737142857143V680.6ZM640.7760000000001 680.6V651.0H644.2434285714286L663.8217142857143 675.3142857142857H662.0034285714286V651.0H666.232V680.6H662.7645714285715L643.1862857142858 656.2857142857143H645.0045714285715V680.6ZM689.9965714285715 680.9382857142857Q686.5714285714287 680.9382857142857 683.6960000000001 679.8177142857144Q680.8205714285715 678.6971428571429 678.7062857142857 676.6462857142858Q676.5920000000001 674.5954285714286 675.4080000000001 671.8468571428572Q674.224 669.0982857142858 674.224 665.8000000000001Q674.224 662.5017142857143 675.4080000000001 659.7531428571428Q676.5920000000001 657.0045714285715 678.7274285714286 654.9537142857143Q680.8628571428573 652.9028571428572 683.7382857142859 651.7822857142858Q686.6137142857144 650.6617142857143 690.0811428571429 650.6617142857143Q693.5908571428572 650.6617142857143 696.5085714285715 651.8034285714286Q699.4262857142858 652.9451428571429 701.4560000000001 655.2285714285714L698.8342857142858 657.8502857142857Q697.0160000000001 656.0742857142857 694.8805714285716 655.2497142857143Q692.7451428571429 654.4251428571429 690.2502857142858 654.4251428571429Q687.7131428571429 654.4251428571429 685.5354285714286 655.2708571428572Q683.3577142857143 656.1165714285714 681.772 657.6388571428572Q680.1862857142858 659.1611428571429 679.3194285714287 661.2542857142857Q678.4525714285716 663.3474285714286 678.4525714285716 665.8000000000001Q678.4525714285716 668.2102857142858 679.3194285714287 670.3034285714286Q680.1862857142858 672.3965714285714 681.772 673.94Q683.3577142857143 675.4834285714286 685.5142857142857 676.3291428571429Q687.6708571428572 677.1748571428571 690.2080000000001 677.1748571428571Q692.5760000000001 677.1748571428571 694.7537142857144 676.4348571428571Q696.9314285714287 675.6948571428571 698.792 673.9611428571429L701.2022857142858 677.1748571428571Q699.0034285714287 679.0354285714286 696.0645714285715 679.9868571428572Q693.1257142857144 680.9382857142857 689.9965714285715 680.9382857142857ZM697.1428571428572 676.6251428571429V665.6308571428572H701.2022857142858V677.1748571428571ZM731.5211428571429 680.9382857142857Q728.5188571428572 680.9382857142857 726.1931428571429 679.9657142857143Q723.8674285714286 678.9931428571429 722.5142857142857 677.2594285714285Q721.1611428571429 675.5257142857143 721.1611428571429 673.2422857142857Q721.1611428571429 671.2548571428572 722.0491428571429 669.6057142857144Q722.9371428571429 667.9565714285715 724.8822857142858 666.4131428571429Q726.8274285714286 664.8697142857143 729.9988571428572 663.2205714285715Q732.5782857142858 661.8674285714286 734.037142857143 660.8525714285715Q735.4960000000001 659.8377142857144 736.109142857143 658.9285714285716Q736.7222857142858 658.0194285714286 736.7222857142858 656.9622857142857Q736.7222857142858 655.5245714285714 735.7074285714286 654.6154285714285Q734.6925714285715 653.7062857142857 732.7897142857144 653.7062857142857Q730.8022857142857 653.7062857142857 729.6817142857144 654.7Q728.561142857143 655.6937142857143 728.561142857143 657.3005714285714Q728.561142857143 658.104 728.836 658.844Q729.1108571428572 659.5840000000001 729.8508571428572 660.4931428571429Q730.5908571428572 661.4022857142858 731.9862857142857 662.7977142857143L747.6320000000001 678.3588571428571L745.3485714285715 681.0651428571429L728.7302857142857 664.5314285714286Q727.2502857142857 663.0514285714286 726.4045714285714 661.8885714285714Q725.5588571428572 660.7257142857143 725.1782857142857 659.6262857142857Q724.7977142857143 658.5268571428571 724.7977142857143 657.3851428571429Q724.7977142857143 655.3977142857143 725.7914285714286 653.8965714285714Q726.7851428571429 652.3954285714286 728.5822857142857 651.5708571428572Q730.3794285714287 650.7462857142857 732.7897142857144 650.7462857142857Q735.0308571428571 650.7462857142857 736.6800000000001 651.4862857142857Q738.3291428571429 652.2262857142857 739.2382857142857 653.6005714285715Q740.1474285714286 654.9748571428572 740.1474285714286 656.9200000000001Q740.1474285714286 658.6114285714286 739.3228571428572 660.0491428571429Q738.4982857142858 661.4868571428572 736.6800000000001 662.84Q734.8617142857144 664.1931428571429 731.7748571428572 665.7577142857143Q729.2377142857143 667.0685714285714 727.8000000000001 668.1891428571429Q726.3622857142858 669.3097142857143 725.7491428571429 670.4091428571429Q725.1360000000001 671.5085714285715 725.1360000000001 672.8194285714286Q725.1360000000001 674.2148571428571 725.9605714285715 675.2931428571428Q726.7851428571429 676.3714285714286 728.2862857142857 676.9634285714286Q729.7874285714286 677.5554285714286 731.7748571428572 677.5554285714286Q734.6080000000001 677.5554285714286 736.8914285714286 676.3291428571429Q739.1748571428571 675.1028571428571 740.7182857142857 672.6502857142857Q742.2617142857143 670.1977142857143 742.9805714285715 666.5611428571428L746.2365714285714 667.6182857142858Q745.3908571428572 671.8891428571429 743.34 674.8491428571429Q741.2891428571429 677.8091428571429 738.2868571428571 679.3737142857143Q735.2845714285714 680.9382857142857 731.5211428571429 680.9382857142857ZM767.1257142857144 680.6V651.0H771.3542857142858V676.9211428571429H787.3805714285714V680.6ZM797.6137142857143 663.7702857142857H812.8365714285715V667.3645714285715H797.6137142857143ZM797.9942857142858 676.9211428571429H815.2468571428572V680.6H793.7657142857144V651.0H814.6548571428572V654.6788571428572H797.9942857142858ZM819.1371428571429 680.6 832.5417142857143 651.0H836.7280000000001L850.1748571428571 680.6H845.7348571428572L833.768 653.368H835.4594285714286L823.4925714285715 680.6ZM824.8457142857143 673.2 825.9874285714286 669.8171428571429H842.648L843.8742857142857 673.2ZM856.0948571428572 680.6V651.0H868.5691428571429Q873.3051428571429 651.0 876.9205714285715 652.8605714285715Q880.5360000000001 654.7211428571429 882.5445714285715 658.0617142857143Q884.5531428571429 661.4022857142858 884.5531428571429 665.8000000000001Q884.5531428571429 670.1977142857143 882.5445714285715 673.5382857142857Q880.5360000000001 676.8788571428572 876.9205714285715 678.7394285714286Q873.3051428571429 680.6 868.5691428571429 680.6ZM860.3234285714286 676.9211428571429H868.3154285714286Q871.9942857142858 676.9211428571429 874.6794285714286 675.5257142857142Q877.3645714285715 674.1302857142857 878.8445714285715 671.6142857142858Q880.3245714285714 669.0982857142858 880.3245714285714 665.8000000000001Q880.3245714285714 662.4594285714286 878.8445714285715 659.9645714285714Q877.3645714285715 657.4697142857143 874.6794285714286 656.0742857142857Q871.9942857142858 654.6788571428572 868.3154285714286 654.6788571428572H860.3234285714286ZM896.393142857143 663.7702857142857H911.6160000000001V667.3645714285715H896.393142857143ZM896.7737142857144 676.9211428571429H914.0262857142858V680.6H892.545142857143V651.0H913.4342857142858V654.6788571428572H896.7737142857144ZM922.3988571428572 680.6V651.0H933.9428571428572Q937.8331428571429 651.0 940.5817142857143 652.2262857142857Q943.3302857142858 653.4525714285714 944.8102857142858 655.7782857142857Q946.2902857142857 658.104 946.2902857142857 661.3177142857143Q946.2902857142857 664.5314285714286 944.8102857142858 666.836Q943.3302857142858 669.1405714285714 940.5817142857143 670.3668571428572Q937.8331428571429 671.5931428571429 933.9428571428572 671.5931428571429H924.7245714285714L926.6274285714286 669.648V680.6ZM942.1885714285714 680.6 934.6617142857143 669.8594285714286H939.1862857142858L946.7977142857143 680.6ZM926.6274285714286 670.0708571428572 924.7245714285714 667.9988571428572H933.816Q937.8754285714285 667.9988571428572 939.9685714285714 666.244Q942.0617142857143 664.4891428571428 942.0617142857143 661.3177142857143Q942.0617142857143 658.1462857142857 939.9685714285714 656.4125714285715Q937.8754285714285 654.6788571428572 933.816 654.6788571428572H924.7245714285714L926.6274285714286 652.5645714285714ZM963.2891428571429 680.9382857142857Q959.9062857142857 680.9382857142857 956.8194285714285 679.9022857142857Q953.7325714285714 678.8662857142857 951.9565714285715 677.2171428571429L953.5211428571429 673.9188571428572Q955.2125714285714 675.3988571428572 957.8342857142857 676.3714285714286Q960.456 677.344 963.2891428571429 677.344Q965.8685714285714 677.344 967.4754285714286 676.752Q969.0822857142857 676.16 969.8434285714286 675.124Q970.6045714285715 674.088 970.6045714285715 672.7771428571428Q970.6045714285715 671.2548571428572 969.6108571428572 670.3245714285715Q968.6171428571429 669.3942857142857 967.0314285714286 668.8234285714286Q965.4457142857143 668.2525714285714 963.5428571428572 667.8297142857143Q961.64 667.4068571428571 959.716 666.836Q957.792 666.2651428571429 956.2062857142857 665.3771428571429Q954.6205714285715 664.4891428571428 953.648 662.988Q952.6754285714286 661.4868571428572 952.6754285714286 659.1188571428572Q952.6754285714286 656.8354285714286 953.8805714285714 654.9114285714286Q955.0857142857143 652.9874285714286 957.6017142857143 651.8245714285715Q960.1177142857143 650.6617142857143 964.008 650.6617142857143Q966.5874285714286 650.6617142857143 969.1245714285715 651.3382857142858Q971.6617142857143 652.0148571428572 973.5222857142858 653.2834285714285L972.1268571428571 656.6662857142858Q970.224 655.3977142857143 968.1097142857143 654.8268571428571Q965.9954285714285 654.256 964.008 654.256Q961.5131428571428 654.256 959.9062857142858 654.8902857142857Q958.2994285714286 655.5245714285714 957.5594285714286 656.5817142857143Q956.8194285714286 657.6388571428572 956.8194285714286 658.9497142857143Q956.8194285714286 660.5142857142857 957.8131428571428 661.4445714285714Q958.8068571428571 662.3748571428572 960.3925714285714 662.9245714285714Q961.9782857142857 663.4742857142858 963.8811428571428 663.9182857142857Q965.784 664.3622857142857 967.7080000000001 664.912Q969.6320000000001 665.4617142857143 971.2177142857142 666.3497142857143Q972.8034285714285 667.2377142857143 973.7760000000001 668.7177142857142Q974.7485714285715 670.1977142857143 974.7485714285715 672.5234285714286Q974.7485714285715 674.7645714285715 973.5222857142858 676.6885714285714Q972.296 678.6125714285714 969.7377142857143 679.7754285714286Q967.1794285714286 680.9382857142857 963.2891428571429 680.9382857142857ZM1003.672 651.0H1007.9005714285714V680.6H1003.672ZM986.6731428571429 680.6H982.4445714285715V651.0H986.6731428571429ZM1004.0525714285715 667.4068571428571H986.2502857142857V663.7280000000001H1004.0525714285715ZM1018.3028571428573 680.6V651.0H1022.5314285714287V680.6ZM1032.9337142857144 680.6V651.0H1044.4777142857142Q1048.368 651.0 1051.1165714285714 652.2262857142857Q1053.865142857143 653.4525714285714 1055.345142857143 655.7782857142857Q1056.825142857143 658.104 1056.825142857143 661.3177142857143Q1056.825142857143 664.5314285714286 1055.345142857143 666.836Q1053.865142857143 669.1405714285714 1051.1165714285714 670.388Q1048.368 671.6354285714286 1044.4777142857142 671.6354285714286H1035.2594285714285L1037.1622857142856 669.648V680.6ZM1037.1622857142856 670.0708571428572 1035.2594285714285 667.9565714285715H1044.3508571428572Q1048.4102857142857 667.9565714285715 1050.5034285714287 666.2228571428572Q1052.5965714285715 664.4891428571428 1052.5965714285715 661.3177142857143Q1052.5965714285715 658.1462857142857 1050.5034285714287 656.4125714285715Q1048.4102857142857 654.6788571428572 1044.3508571428572 654.6788571428572H1035.2594285714285L1037.1622857142856 652.5645714285714Z"/></svg></h1>
+      <p class="lead">Team challenges designed and run by architects in Hong Kong. Small squads, a tight brief, a ticking clock and a live load test at the end.</p>
+      <div class="actions">
+        <a class="btn glass" href="#challenge">Watch the film</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="ex-sec" id="challenge" data-sec="Challenge">
+    <div class="wrap">
+      <div class="head">
+        <h2>The Bridge Exchange<span class="odot" aria-hidden="true"></span></h2>
+      </div>
+      <div class="sheet ex" id="ex">
+      <figure class="film">
+        <div class="screen" id="screen">
+          <video id="vid" playsinline muted loop preload="metadata" aria-label="The Bridge Exchange, a 62-second film"></video>
+          <script>/* phones get the vertical cut */ (function () { var v = document.getElementById("vid"), tall = matchMedia("(max-width: 760px)").matches;
+            v.poster = tall ? "media/bx-v12-9x16-poster.jpg" : "media/bx-v12-poster.jpg";
+            v.src = tall ? "film/bridge-exchange-v12-9x16.mp4" : "film/bridge-exchange-v13.mp4"; })();</script>
+          <button class="play" id="play-sound" type="button">
+            <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12.5" fill="none" stroke="#fff" stroke-opacity=".6"/><path d="M10.5 8.5v9l7-4.5z" fill="#fff"/></svg>
+            Play with sound
+          </button>
+        </div>
+        <figcaption class="ctrl">
+          <button type="button" id="btn-play">Pause</button>
+          <button type="button" id="btn-sound">Sound on</button>
+          <span class="track" id="track" role="slider" aria-label="Film position" aria-valuemin="0" aria-valuemax="62" aria-valuenow="0" tabindex="0"><i><b id="prog"></b></i></span>
+          <span class="time" id="time">00:00 / 01:02</span>
+        </figcaption>
+      </figure>
+
+        <div class="ex-top">
+          <p class="lead">Same budget. A live market. One bridge. Load it until it breaks.</p>
+          <p>Every team starts with 1,000 credits. Premium materials are easy to build with, but expensive. Newspaper costs almost nothing, if you know how to make it strong. Expert tips are for sale, and every purchase moves the price for everyone else.</p>
+        </div>
+
+        <ol class="steps">
+          <li><p class="k">Step 1</p><h3>Bid</h3><p>Buy materials and know-how on a market that reacts to every team’s demand.</p></li>
+          <li><p class="k">Step 2</p><h3>Build</h3><p>Premium and easy, or cheap and clever. Spend it now, or keep it for the score.</p></li>
+          <li><p class="k">Step 3</p><h3>Break</h3><p>Load it live in front of everyone. The highest Legend Score wins.</p></li>
+        </ol>
+
+        <div class="score">
+          <div>
+            <h3>Legend Score</h3>
+            <p class="formula"><span class="nw">Span <span class="op">×</span> Load</span> <span class="nw"><span class="op">× (1 +</span> Unspent <span class="op">÷</span> Budget<span class="op">)</span></span></p>
+            <p class="note">Span times load measures the bending moment the bridge resists, so a long bridge and a strong one compete fairly. Every credit you don’t spend multiplies your result.</p>
+          </div>
+          <form class="calc" id="calc" aria-label="Try the Legend Score">
+            <label>Span <input type="range" id="c-span" min="0.5" max="1.2" step="0.05" value="0.9"><output id="o-span">0.90 m</output></label>
+            <label>Load held <input type="range" id="c-load" min="1" max="20" step="0.5" value="11"><output id="o-load">11.0 kg</output></label>
+            <label>Unspent <input type="range" id="c-left" min="0" max="1000" step="10" value="400"><output id="o-left">400</output></label>
+            <div class="total"><span>Your score</span><b id="o-score">13.9</b></div>
+            <p class="meter-row"><span class="meter" aria-hidden="true"><i id="o-bar"></i></span><span>of 26.4 max</span></p>
+          </form>
+        </div>
+
+        <div class="reveals">
+          <h3>What it reveals about your team</h3>
+          <article><h4>Resource allocation</h4><p>Who controls the budget?<br>How does the team arbitrate what is worth paying for?</p></article>
+          <article><h4>Buy or build expertise</h4><p>Pays for know-how?<br>Or trusts its own?</p></article>
+          <article><h4>Behaviour under pressure</h4><p>Who panics when prices jump?<br>Who spots the cheap route?</p></article>
+          <article><h4>Collaborate or compete</h4><p>Teams can trade.<br>Some help each other.<br>Some corner the market.</p></article>
+        </div>
+
+        <dl class="facts">
+          <div><dt>Length</dt><dd>Half day, about 3.5 hours with the debrief</dd></div>
+          <div><dt>Team size</dt><dd>6 to 50 people, best in squads of five or six</dd></div>
+          <div><dt>Where</dt><dd>Your venue or off-site. We bring the market and materials</dd></div>
+          <div><dt>From</dt><dd>HK$730 per person, materials included</dd></div>
+        </dl>
+        <p class="cta"><a class="btn btn-ink" href="#book"><span class="dot" aria-hidden="true"></span>Book The Bridge Exchange</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="facilitator" data-sec="Facilitator">
+    <div class="wrap">
+      <div class="sheet fac">
+        <div>
+          <h2>Julien Klisz<span class="odot" aria-hidden="true"></span></h2>
+          <p class="role">Licensed architect and lead facilitator</p>
+          <p class="bio">Julien is an award-winning architect and Design Director at LEAD, the Laboratory for Explorative Architecture &amp; Design in Hong Kong. Load-Bearing Legends takes the way architects actually work, under real constraints, deadlines and loads, and turns it into a team challenge.</p>
+        </div>
+        <ul>
+          <li><b>Design Director at LEAD</b><span>Cultural buildings, public installations and large urban developments</span></li>
+          <li><b>University educator</b><span>Has taught and led master’s design studios at CUHK and HKU since 2013</span></li>
+          <li><b>Award-winning projects</b><span>Built work across Asia and the Middle East</span></li>
+          <li><b>Venice Architecture Biennale</b><span>Exhibited at the 12th International Architecture Exhibition</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="book" data-sec="Book">
+    <div class="wrap">
+      <div class="head">
+        <h2>Plan a session<span class="odot" aria-hidden="true"></span></h2>
+      </div>
+      <form class="sheet book" id="book-form" novalidate>
+        <div class="fields">
+          <div class="field">
+            <label class="lab" for="b-n">Participants</label>
+            <div class="stepper"><button type="button" data-step="-1" aria-label="One person fewer">−</button><input id="b-n" type="number" inputmode="numeric" min="6" max="50" value="20"><button type="button" data-step="1" aria-label="One person more">+</button></div>
+            <p class="hint">From 6 to 50 people, best in squads of five or six</p>
+          </div>
+          <fieldset class="field">
+            <legend>Venue</legend>
+            <div class="choices">
+              <label><input type="radio" name="venue" value="office" checked><span>Your venue<small>We bring everything</small></span></label>
+              <label><input type="radio" name="venue" value="out"><span>Off-site<small>We suggest a venue</small></span></label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <span class="lab" id="b-date-lab">Preferred date</span>
+            <div class="date-wrap">
+            <button type="button" class="date-btn" id="b-date" aria-haspopup="dialog" aria-expanded="false" aria-controls="cal" aria-labelledby="b-date-lab b-date-val">
+              <span id="b-date-val" class="ph">Choose a date</span>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2.75" y="4.25" width="14.5" height="13" rx="3.5"/><path d="M2.75 8.5h14.5M6.5 2.5v3.5M13.5 2.5v3.5"/></svg>
+            </button>
+            <div class="cal" id="cal" role="dialog" aria-label="Choose a date" hidden>
+              <div class="cal-head">
+                <button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg></button>
+                <p id="cal-title" aria-live="polite"></p>
+                <button type="button" class="cal-nav" id="cal-next" aria-label="Next month"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>
+              </div>
+              <div class="cal-dow" aria-hidden="true"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>
+              <div class="cal-grid" id="cal-grid"></div>
+            </div>
+            </div>
+            <div class="choices tod" role="radiogroup" aria-label="Time of day">
+              <label><input type="radio" name="tod" value="Morning"><span>Morning</span></label>
+              <label><input type="radio" name="tod" value="Afternoon"><span>Afternoon</span></label>
+              <label><input type="radio" name="tod" value="Evening"><span>Evening</span></label>
+            </div>
+          </div>
+        </div>
+        <aside class="estimate" aria-live="polite">
+          <div class="est-in">
+            <h3>Reference estimate</h3>
+            <p class="sum" id="e-sum">HK$9,000</p>
+            <dl id="e-lines"></dl>
+            <a class="btn btn-ink" id="e-send" href="https://wa.me/85267533727" target="_blank" rel="noopener">Request this booking on WhatsApp</a>
+          </div>
+        </aside>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="foot" data-sec="Book">
+  <div class="wrap">
+    <p class="big">See what your team can carry<span class="odot" aria-hidden="true"></span></p>
+    <div class="row">
+      <p>Built by architects. Designed for teams.<br>© 2026 Load-Bearing Legends.</p>
+      <details>
+        <summary>Terms</summary>
+        <ol>
+          <li>A session is confirmed once we confirm it in writing and the agreed fee or deposit is received.</li>
+          <li>Confirm the final number of participants at least 5 working days before the session.</li>
+          <li>Cancellation and rescheduling terms are set out in each proposal.</li>
+          <li>If Typhoon Signal No. 8 or above, or a Black Rainstorm Warning, is in force within 2 hours of the start, we reschedule at no cost.</li>
+          <li>At your venue, you provide a clear room with tables. We bring all materials and tools. The facilitator may stop any activity that becomes unsafe.</li>
+          <li>Photos and video are taken only with your agreement, and shared with you after the session.</li>
+          <li>These terms are governed by the laws of the Hong Kong SAR.</li>
+        </ol>
+      </details>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  requestAnimationFrame(function () { requestAnimationFrame(function () { document.documentElement.classList.add("is-ready"); }); });
+  var WA = "85267533727";
+
+  /* ---------- the model settles as you scroll; a veil rises behind the content ---------- */
+  var root = document.documentElement, ticking = false, bar = document.getElementById("bar");
+  function onScroll() {
+    ticking = false;
+    var y = window.scrollY, vh = window.innerHeight, max = Math.max(1, document.body.scrollHeight - vh), p = Math.min(1, y / max);
+    if (!reduce) {
+      root.style.setProperty("--z", (1.06 - 0.06 * Math.min(1, y / vh)).toFixed(4));
+      root.style.setProperty("--py", (-p * 4).toFixed(2) + "vh");
+    }
+    root.style.setProperty("--veil", Math.min(1, Math.max(0, (y - vh * 0.55) / (vh * 0.6))).toFixed(3));
+    bar.style.setProperty("--p", p.toFixed(4));
+  }
+  window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  onScroll();
+
+  /* ---------- the menu: a soft highlight glides to the link you point at, and rests on the section you are in ---------- */
+  var nav = document.getElementById("nav"), blob = document.getElementById("blob");
+  var links = Array.prototype.slice.call(nav.querySelectorAll("a:not(.go)")), active = null, hovering = null;
+  function placeBlob(a) {
+    if (!a) { blob.classList.remove("on"); return; }
+    blob.style.setProperty("--bx", a.offsetLeft + "px"); blob.style.setProperty("--bw", a.offsetWidth + "px"); blob.classList.add("on");
+  }
+  links.forEach(function (a) {
+    a.addEventListener("mouseenter", function () { hovering = a; placeBlob(a); });
+    a.addEventListener("focus", function () { placeBlob(a); });
+    a.addEventListener("blur", function () { placeBlob(active); });
+  });
+  nav.addEventListener("mouseleave", function () { hovering = null; placeBlob(active); });
+  window.addEventListener("resize", function () { placeBlob(hovering || active); });
+
+  /* ---------- section counter and nav state ---------- */
+  var secs = Array.prototype.slice.call(document.querySelectorAll("main section[data-sec]"));
+  var sio = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var i = secs.indexOf(e.target);
+      document.getElementById("sec-n").textContent = ("0" + (i + 1)).slice(-2);
+      document.getElementById("sec-t").textContent = e.target.dataset.sec;
+      active = links.filter(function (a) { return a.getAttribute("href") === "#" + e.target.id; })[0] || null;
+      links.forEach(function (a) { a.toggleAttribute("aria-current", a === active); });
+      if (!hovering) placeBlob(active);
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  secs.forEach(function (s) { sio.observe(s); });
+
+  /* ---------- Hong Kong time ---------- */
+  var clock = document.getElementById("clock");
+  function time() { try { clock.textContent = "HKT " + new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Hong_Kong", hour: "2-digit", minute: "2-digit" }).format(new Date()); } catch (e) {} }
+  time(); setInterval(time, 20000);
+
+  /* ---------- menu on phones ---------- */
+  var menuBtn = document.getElementById("menu-btn");
+  menuBtn.addEventListener("click", function () { var o = nav.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", o); menuBtn.textContent = o ? "Close" : "Menu"; });
+  nav.addEventListener("click", function (e) { if (e.target.tagName === "A") { nav.classList.remove("open"); menuBtn.setAttribute("aria-expanded", false); menuBtn.textContent = "Menu"; } });
+
+  /* ---------- the film ---------- */
+  var vid = document.getElementById("vid"), screen = document.getElementById("screen"), bPlay = document.getElementById("btn-play"),
+      bSound = document.getElementById("btn-sound"), bBig = document.getElementById("play-sound"), prog = document.getElementById("prog"),
+      track = document.getElementById("track"), tEl = document.getElementById("time"), userPaused = false;
+  function mmss(s) { s = Math.max(0, s || 0); return ("0" + Math.floor(s / 60)).slice(-2) + ":" + ("0" + Math.floor(s % 60)).slice(-2); }
+  function sync() {
+    bPlay.textContent = vid.paused ? "Play" : "Pause";
+    bSound.textContent = vid.muted ? "Sound on" : "Sound off";
+    screen.classList.toggle("is-live", !vid.muted);
+  }
+  vid.addEventListener("timeupdate", function () {
+    var d = vid.duration || 62.7; prog.style.width = (vid.currentTime / d * 100) + "%";
+    tEl.textContent = mmss(vid.currentTime) + " / " + mmss(d); track.setAttribute("aria-valuenow", Math.round(vid.currentTime));
+  });
+  ["play", "pause", "volumechange"].forEach(function (ev) { vid.addEventListener(ev, sync); });
+  function playSound() { vid.muted = false; vid.currentTime = 0; vid.loop = false; userPaused = false; vid.play(); }
+  bBig.addEventListener("click", function (e) { e.stopPropagation(); playSound(); });
+  bPlay.addEventListener("click", function () { if (vid.paused) { userPaused = false; vid.play(); } else { userPaused = true; vid.pause(); } });
+  bSound.addEventListener("click", function () { if (vid.muted && vid.paused) { playSound(); return; } vid.muted = !vid.muted; if (!vid.muted) vid.loop = false; });
+  screen.addEventListener("click", function () { if (vid.muted) playSound(); else bPlay.click(); });
+  function seek(clientX) { var r = track.getBoundingClientRect(); vid.currentTime = Math.max(0, Math.min(1, (clientX - r.left) / r.width)) * (vid.duration || 62.7); }
+  track.addEventListener("click", function (e) { seek(e.clientX); });
+  track.addEventListener("keydown", function (e) { if (e.key === "ArrowRight") vid.currentTime += 5; if (e.key === "ArrowLeft") vid.currentTime -= 5; });
+  vid.addEventListener("ended", function () { vid.muted = true; vid.loop = true; vid.currentTime = 0; vid.play(); });
+  // a quiet preview plays while the film is on screen; it stops when it isn't
+  var vio = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (e.isIntersecting) { if (!reduce && !userPaused && vid.paused) vid.play().catch(function () {}); }
+      else if (!vid.paused) vid.pause();
+    });
+  }, { threshold: 0.35 });
+  vio.observe(screen); sync();
+
+  /* ---------- Legend Score ---------- */
+  var cs = document.getElementById("c-span"), cl = document.getElementById("c-load"), cu = document.getElementById("c-left");
+  function score() {
+    var s = +cs.value, l = +cl.value, u = +cu.value, v = s * l * (1 + u / 1000);
+    document.getElementById("o-span").textContent = s.toFixed(2) + " m";
+    document.getElementById("o-load").textContent = l.toFixed(1) + " kg";
+    document.getElementById("o-left").textContent = u.toLocaleString("en-US");
+    document.getElementById("o-score").textContent = v.toFixed(1);
+    document.getElementById("o-bar").style.setProperty("--s", Math.min(1, v / 26.4).toFixed(3));
+    [cs, cl, cu].forEach(function (r) { r.style.setProperty("--p", ((r.value - r.min) / (r.max - r.min) * 100) + "%"); });
+  }
+  [cs, cl, cu].forEach(function (r) { r.addEventListener("input", score); }); score();
+
+  /* ---------- preferred date: a small calendar in a filleted window ---------- */
+  var dBtn = document.getElementById("b-date"), dVal = document.getElementById("b-date-val"), cal = document.getElementById("cal"),
+      grid = document.getElementById("cal-grid"), title = document.getElementById("cal-title"), prev = document.getElementById("cal-prev"), next = document.getElementById("cal-next");
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  var first = new Date(); first.setHours(12, 0, 0, 0); first.setDate(first.getDate() + 7);          // a week's notice
+  var last = new Date(first); last.setFullYear(last.getFullYear() + 1);
+  var view = new Date(first.getFullYear(), first.getMonth(), 1, 12), picked = null, focusDay = new Date(first);
+  var same = function (a, b) { return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); };
+  var iso = function (d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); };
+  var nice = function (d) { return d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }); };
+  function render() {
+    title.textContent = MONTHS[view.getMonth()] + " " + view.getFullYear();
+    prev.disabled = view.getFullYear() === first.getFullYear() && view.getMonth() === first.getMonth();
+    next.disabled = view.getFullYear() === last.getFullYear() && view.getMonth() === last.getMonth();
+    var lead = (view.getDay() + 6) % 7, days = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate(), html = "";
+    for (var i = 0; i < lead; i++) html += "<span></span>";
+    for (var d = 1; d <= days; d++) {
+      var day = new Date(view.getFullYear(), view.getMonth(), d, 12), off = day < first || day > last;
+      html += '<button type="button" data-d="' + iso(day) + '"' + (off ? " disabled" : "") + ' class="' + (same(day, picked) ? "is-sel" : "") + (same(day, first) ? " is-first" : "") +
+        '" aria-label="' + nice(day) + '"' + (same(day, picked) ? ' aria-pressed="true"' : "") + ' tabindex="' + (same(day, focusDay) ? "0" : "-1") + '">' + d + "</button>";
+    }
+    grid.innerHTML = html;
+  }
+  function focusOn(d) {
+    if (d < first) d = new Date(first); if (d > last) d = new Date(last);
+    focusDay = d;
+    if (d.getMonth() !== view.getMonth() || d.getFullYear() !== view.getFullYear()) view = new Date(d.getFullYear(), d.getMonth(), 1, 12);
+    render(); var b = grid.querySelector('[data-d="' + iso(d) + '"]'); if (b) b.focus();
+  }
+  function openCal() {
+    focusDay = picked ? new Date(picked) : new Date(first); view = new Date(focusDay.getFullYear(), focusDay.getMonth(), 1, 12); render();
+    cal.hidden = false; dBtn.setAttribute("aria-expanded", "true");
+    var b = grid.querySelector('[tabindex="0"]'); if (b) b.focus({ preventScroll: true });
+  }
+  function closeCal(back) { if (cal.hidden) return; cal.hidden = true; dBtn.setAttribute("aria-expanded", "false"); if (back) dBtn.focus(); }
+  dBtn.addEventListener("click", function () { if (cal.hidden) openCal(); else closeCal(); });
+  prev.addEventListener("click", function () { view = new Date(view.getFullYear(), view.getMonth() - 1, 1, 12); render(); });
+  next.addEventListener("click", function () { view = new Date(view.getFullYear(), view.getMonth() + 1, 1, 12); render(); });
+  grid.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-d]"); if (!b || b.disabled) return;
+    var p = b.dataset.d.split("-"); picked = new Date(+p[0], +p[1] - 1, +p[2], 12);
+    dVal.textContent = nice(picked); dVal.classList.remove("ph"); closeCal(true); estimate();
+  });
+  grid.addEventListener("keydown", function (e) {
+    var step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key]; if (!step) return;
+    e.preventDefault(); var d = new Date(focusDay); d.setDate(d.getDate() + step); focusOn(d);
+  });
+  cal.addEventListener("keydown", function (e) { if (e.key === "Escape") { e.stopPropagation(); closeCal(true); } });
+  document.addEventListener("click", function (e) { if (!cal.hidden && !cal.contains(e.target) && !dBtn.contains(e.target)) closeCal(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCal(true); });
+
+  /* ---------- booking estimator: The Bridge Exchange, half day ---------- */
+  var PRICE = { perHead: 730, minimum: 4800, offsite: 150 };            // half day, market and materials included
+  var f = document.getElementById("book-form"), nIn = document.getElementById("b-n");
+  var hk = function (x) { return "HK$" + Math.round(x).toLocaleString("en-US"); };
+  function val(name) { var el = f.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : null; }
+  function clampN() { var n = Math.round(+nIn.value || 20); n = Math.max(6, Math.min(50, n)); nIn.value = n; return n; }
+  function estimate() {
+    var n = clampN(), venue = val("venue");
+    var disc = n >= 41 ? 0.15 : n >= 21 ? 0.10 : n >= 12 ? 0.05 : 0, r = PRICE.perHead * (1 - disc);
+    var extra = venue === "out" ? PRICE.offsite : 0;
+    var total = Math.round(Math.max(PRICE.minimum, n * (r + extra)) / 10) * 10;
+    var lines = [["Half day, " + n + " people", hk(PRICE.perHead) + " pp"]];
+    if (disc) lines.push(["Group rate, " + (n >= 41 ? "41 or more" : n >= 21 ? "21 to 40" : "12 to 20"), "−" + Math.round(disc * 100) + "%"]);
+    if (venue === "out") lines.push(["Off-site venue, found and set up", "+" + hk(PRICE.offsite) + " pp"]);
+    if (n * (r + extra) < PRICE.minimum) lines.push(["Minimum per session", hk(PRICE.minimum)]);
+    document.getElementById("e-sum").innerHTML = hk(total) + "<small>total</small>";
+    document.getElementById("e-lines").innerHTML = lines.map(function (l) { return "<div><dt>" + l[0] + "</dt><dd>" + l[1] + "</dd></div>"; }).join("");
+    var msg = "Hi Julien, I would like to book The Bridge Exchange (Load-Bearing Legends).\n" +
+      "Participants: " + n + "\nVenue: " + (venue === "out" ? "Off-site, please suggest one" : "Our venue") + "\nDuration: Half day" +
+      (picked ? "\nPreferred date: " + nice(picked) : "") + (val("tod") ? "\nTime of day: " + val("tod") : "") + "\nReference estimate: " + hk(total);
+    document.getElementById("e-send").href = "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
+  }
+  f.addEventListener("input", estimate); f.addEventListener("change", estimate);
+  f.querySelectorAll("[data-step]").forEach(function (b) { b.addEventListener("click", function () { nIn.value = clampN() + (+b.dataset.step); estimate(); }); });
+  nIn.addEventListener("blur", estimate);
+  f.addEventListener("submit", function (e) { e.preventDefault(); });
+  estimate();
+})();
+</script>
+</body>
+</html>
