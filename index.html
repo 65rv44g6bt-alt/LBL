@@ -156,6 +156,9 @@ section { position: relative; padding: clamp(96px, 14vh, 150px) var(--gut); }
 .screen .play svg { width: 26px; height: 26px; }
 .screen.is-live .play { opacity: 0; pointer-events: none; }
 .ctrl { display: flex; align-items: center; gap: 16px; padding: 13px 8px 3px; font-size: 0.86rem; }
+.ctrl .fs { display: grid; place-items: center; width: 36px; height: 36px; margin: -6px -4px -6px 0; padding: 0; border-radius: 50%; }
+.ctrl .fs:hover { background: rgba(27, 29, 31, 0.06); }
+.ctrl .fs svg { width: 20px; height: 20px; }
 .ctrl button { border: 0; background: none; padding: 6px 2px; cursor: pointer; font-weight: 500; transition: color 0.2s; }
 .ctrl button:hover { color: var(--orange-ink); }
 .ctrl .time { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
@@ -307,7 +310,14 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   body { font-size: 1rem; }
   .brand .mk { width: 32px; height: 32px; }
   .brand .lbl { font-size: 1.02rem; }
-  .menu-btn { display: inline-flex; align-items: center; min-height: 42px; padding: 0 18px; border-radius: 999px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
+  .menu-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 50%; cursor: pointer; }
+  .bars { position: relative; display: block; width: 18px; height: 10px; }
+  .bars i { position: absolute; left: 0; right: 0; height: 1.75px; border-radius: 2px; background: var(--ink); transition: top 0.25s ease, transform 0.35s var(--spring); }
+  .bars i:first-child { top: 0; }
+  .bars i:last-child { top: 8.25px; }
+  .menu-btn[aria-expanded="true"] .bars i { top: 4.1px; }
+  .menu-btn[aria-expanded="true"] .bars i:first-child { transform: rotate(45deg); }
+  .menu-btn[aria-expanded="true"] .bars i:last-child { transform: rotate(-45deg); }
   .nav { position: fixed; top: 70px; right: var(--gut); flex-direction: column; align-items: stretch; border-radius: 24px; padding: 8px; min-width: 230px;
     background: rgba(248, 248, 251, 0.86); opacity: 0; visibility: hidden; transform: translateY(-8px) scale(0.98); transform-origin: 90% 0;
     transition: opacity 0.22s, transform 0.32s var(--spring), visibility 0.22s; }
@@ -329,6 +339,8 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   .screen .play { inset: auto auto 12px 12px; padding: 8px 14px 8px 9px; font-size: 0.86rem; }
   .ctrl { flex-wrap: wrap; gap: 10px 14px; }
   .ctrl .track { flex-basis: 100%; order: 3; }
+  .ctrl .fs { margin-left: auto; width: 42px; height: 42px; }
+  .ctrl .fs svg { width: 22px; height: 22px; }
   .steps { grid-template-columns: 1fr; }
   .steps li + li { border-top: 1px solid var(--line); }
   .steps li { padding-bottom: 18px; }
@@ -358,7 +370,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 
 <header class="hud">
   <a class="brand" href="#top" aria-label="Load-Bearing Legends, back to top"><svg class="mk" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48.50" fill="rgba(255,255,255,0.45)" stroke="#1B1D1F" stroke-width="3"/><path fill="#1B1D1F" transform="translate(19.860 62.313) scale(0.012024)" d="M178 0V-2048H611V-357H1489V0Z M1719.68 0V-2048H2539.6800000000003Q2765.6800000000003 -2048 2916.6800000000003 -1981.0Q3067.6800000000003 -1914 3143.6800000000003 -1795.5Q3219.6800000000003 -1677 3219.6800000000003 -1523Q3219.6800000000003 -1403 3171.6800000000003 -1312.5Q3123.6800000000003 -1222 3040.1800000000003 -1164.5Q2956.6800000000003 -1107 2849.6800000000003 -1083V-1063Q2966.6800000000003 -1058 3069.1800000000003 -997.0Q3171.6800000000003 -936 3235.6800000000003 -826.5Q3299.6800000000003 -717 3299.6800000000003 -566Q3299.6800000000003 -403 3219.1800000000003 -275.5Q3138.6800000000003 -148 2981.6800000000003 -74.0Q2824.6800000000003 0 2594.6800000000003 0ZM2152.6800000000003 -354H2505.6800000000003Q2686.6800000000003 -354 2769.6800000000003 -423.5Q2852.6800000000003 -493 2852.6800000000003 -609Q2852.6800000000003 -694 2811.6800000000003 -759.0Q2770.6800000000003 -824 2695.1800000000003 -861.0Q2619.6800000000003 -898 2515.6800000000003 -898H2152.6800000000003ZM2152.6800000000003 -1191H2473.6800000000003Q2562.6800000000003 -1191 2632.1800000000003 -1222.5Q2701.6800000000003 -1254 2742.1800000000003 -1312.0Q2782.6800000000003 -1370 2782.6800000000003 -1451Q2782.6800000000003 -1562 2704.1800000000003 -1630.0Q2625.6800000000003 -1698 2481.6800000000003 -1698H2152.6800000000003Z M3524.36 0V-2048H3957.36V-357H4835.360000000001V0Z"/></svg><span class="lbl"><b>L</b>oad-<b>B</b>earing <b>L</b>egends</span></a>
-  <button class="menu-btn glass" id="menu-btn" aria-expanded="false" aria-controls="nav">Menu</button>
+  <button class="menu-btn glass" id="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="Open menu"><span class="bars" aria-hidden="true"><i></i><i></i></span></button>
   <nav class="nav glass" id="nav" aria-label="Sections">
     <span class="blob" id="blob" aria-hidden="true"></span>
     <a href="#challenge">Challenge</a>
@@ -403,6 +415,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
           <button type="button" id="btn-sound">Sound on</button>
           <span class="track" id="track" role="slider" aria-label="Film position" aria-valuemin="0" aria-valuemax="62" aria-valuenow="0" tabindex="0"><i><b id="prog"></b></i></span>
           <span class="time" id="time">00:00 / 01:02</span>
+          <button type="button" class="fs" id="btn-full" aria-label="Watch full screen"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 7.5V3.5h4M13 3.5h4v4M17 12.5v4h-4M7 16.5H3v-4"/></svg></button>
         </figcaption>
       </figure>
 
@@ -605,8 +618,9 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 
   /* ---------- menu on phones ---------- */
   var menuBtn = document.getElementById("menu-btn");
-  menuBtn.addEventListener("click", function () { var o = nav.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", o); menuBtn.textContent = o ? "Close" : "Menu"; });
-  nav.addEventListener("click", function (e) { if (e.target.tagName === "A") { nav.classList.remove("open"); menuBtn.setAttribute("aria-expanded", false); menuBtn.textContent = "Menu"; } });
+  function setMenu(o) { nav.classList.toggle("open", o); menuBtn.setAttribute("aria-expanded", o); menuBtn.setAttribute("aria-label", o ? "Close menu" : "Open menu"); }
+  menuBtn.addEventListener("click", function () { setMenu(!nav.classList.contains("open")); });
+  nav.addEventListener("click", function (e) { if (e.target.tagName === "A") setMenu(false); });
 
   /* ---------- the film ---------- */
   var vid = document.getElementById("vid"), screen = document.getElementById("screen"), bPlay = document.getElementById("btn-play"),
@@ -625,6 +639,13 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   ["play", "pause", "volumechange"].forEach(function (ev) { vid.addEventListener(ev, sync); });
   function playSound() { vid.muted = false; vid.currentTime = 0; vid.loop = false; userPaused = false; vid.play(); }
   bBig.addEventListener("click", function (e) { e.stopPropagation(); playSound(); });
+  // full screen: the film restarts with sound if it was only previewing; iPhones use their own video player
+  document.getElementById("btn-full").addEventListener("click", function () {
+    if (vid.muted) playSound();
+    if (vid.requestFullscreen) vid.requestFullscreen().catch(function () { if (vid.webkitEnterFullscreen) vid.webkitEnterFullscreen(); });
+    else if (vid.webkitEnterFullscreen) vid.webkitEnterFullscreen();
+    else if (vid.webkitRequestFullscreen) vid.webkitRequestFullscreen();
+  });
   bPlay.addEventListener("click", function () { if (vid.paused) { userPaused = false; vid.play(); } else { userPaused = true; vid.pause(); } });
   bSound.addEventListener("click", function () { if (vid.muted && vid.paused) { playSound(); return; } vid.muted = !vid.muted; if (!vid.muted) vid.loop = false; });
   screen.addEventListener("click", function () { if (vid.muted) playSound(); else bPlay.click(); });
