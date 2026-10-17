@@ -1,0 +1,756 @@
+/* The Bridge Exchange, hero cut for the website (phones), m4: the vertical film (1080 x 1920 space), drawn live on a transparent canvas,
+   locked to the music's beat grid. Same story and changes as the laptop cut (hero-film-26). */
+window.BEATS = {"p1": [0.139, 0.627, 1.115, 1.602, 2.09, 2.577, 3.065, 3.553, 4.017, 4.505, 4.993, 5.457, 5.922, 6.409, 6.897, 7.384, 7.872, 8.36, 8.847, 9.335, 9.823, 10.287, 10.775, 11.262, 11.75, 12.237, 12.702, 13.189, 13.677, 14.165, 14.652, 15.14, 15.604, 16.092, 16.58, 17.067, 17.555, 18.019, 18.507, 18.994, 19.482, 19.97, 20.434, 20.922, 21.409, 21.897, 22.385, 22.872, 23.36, 23.824, 24.312, 24.799, 25.287, 25.775, 26.263, 26.75, 27.215, 27.702, 28.19, 28.677, 29.165, 29.653, 30.1369, 30.6209, 31.1048, 31.5887, 32.0726, 32.5566], "p2": [31.1048, 31.5924, 32.08, 32.5676, 33.0436, 33.5313, 34.0189, 34.5065, 34.9709, 35.4585, 35.9345, 36.4338, 36.9098, 37.3974, 37.8734, 38.361, 38.8486, 39.3246, 39.8123, 40.2999, 40.7759, 41.2635, 41.7511, 42.2271, 42.7148, 43.214, 43.69, 44.1776, 44.6536, 45.1412, 45.6289, 46.1165, 46.5809, 47.0801, 47.5561, 48.0437, 48.5197, 49.0074, 49.495, 49.9826, 50.447, 50.9303, 51.4135, 51.8968, 52.3801, 52.8792, 53.3552, 53.843, 54.319, 54.8066, 55.2942, 55.7818], "dur": 62.75};   // v27 grid: one bar cut from the break's load, one bar added under 05
+(function () {
+"use strict";
+var cv = null, ctx = null;
+var W = 1080, H = 1920, DUR = window.BEATS.dur;
+var C = { bg: "#FFFFFF", ink: "#1B1D1F", soft: "#6A7076", line: "#E4E5E7", grid: "rgba(27,29,31,0.045)",
+          panel: "#083A42", panel2: "#0B4650", onP: "#EDF3F6", onPs: "#9FB2BF", acc: "#FF6000", red: "#D7263D", sand: "#C9A46A", block: "#E7E4DD" };
+var TEAM = ["#FF6000", "#12A594", "#3B7BEA", "#F2B33D", "#22457A"];
+var TNAME = ["Premium materials", "Newspaper + tips", "The hoarders", "Bamboo truss", "Glue-gun heavy"];
+var SANS = '"Inter Display", Inter, "Helvetica Neue", Arial, sans-serif';
+
+/* ---------- the music's beat grid ---------- */
+var BEATS = window.BEATS;
+var B1 = function (i) { return BEATS.p1[Math.min(i, BEATS.p1.length - 1)]; };
+var B2 = function (i) { return BEATS.p2[Math.min(i, BEATS.p2.length - 1)]; };
+var T_TITLE = B1(6), T_BID = B1(12), T_BUILD = B1(36), T_BREAK = B1(48), T_SNAP = B1(60), T_SCORE = B2(0), T_REVEAL = B2(24), T_END = B2(49);
+var T_SLIDE = B1(16), T_TRADE = B1(18);   // bid: piles fill centred, slide left as the bank arrives, then trading opens
+
+/* ---------- maths ---------- */
+var clamp = function (x, a, b) { a = a === undefined ? 0 : a; b = b === undefined ? 1 : b; return Math.max(a, Math.min(b, x)); };
+var seg = function (t, a, b) { return clamp((t - a) / (b - a)); };
+var lerp = function (a, b, k) { return a + (b - a) * k; };
+var eo = function (x) { return 1 - Math.pow(1 - x, 3); };
+var eo5 = function (x) { return 1 - Math.pow(1 - x, 5); };
+var ei = function (x) { return x * x * x; };
+var eio = function (x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+var eback = function (x) { var c1 = 1.7, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+var vis = function (t, a, b, fi, fo) { fi = fi || 0.3; fo = fo || 0.3; if (t < a || t > b) return 0; return seg(t, a, a + fi) * (1 - seg(t, b - fo, b)); };
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hex(h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16); }); }
+function mix(c1, c2, k) { var a = hex(c1), b = hex(c2); return "rgb(" + Math.round(lerp(a[0], b[0], k)) + "," + Math.round(lerp(a[1], b[1], k)) + "," + Math.round(lerp(a[2], b[2], k)) + ")"; }
+var fmt = function (n) { return Math.round(n).toLocaleString("en-US"); };
+
+/* ---------- drawing helpers ---------- */
+var SA = 1;
+function setFont(size, weight, fam) { ctx.font = (weight || 700) + " " + size + "px " + (fam || SANS); }
+function text(s, x, y, o) {
+  o = o || {}; var size = o.size || 40;
+  setFont(size, o.weight, o.fam);
+  ctx.letterSpacing = (o.ls !== undefined ? o.ls : -size * 0.03) + "px";
+  ctx.textAlign = o.align || "left"; ctx.textBaseline = "alphabetic";
+  ctx.globalAlpha = SA * (o.alpha === undefined ? 1 : o.alpha);
+  ctx.fillStyle = o.color || C.ink; ctx.fillText(s, x, y);
+  ctx.globalAlpha = 1; ctx.letterSpacing = "0px";
+}
+function measure(s, size, weight, ls, fam) { setFont(size, weight, fam); ctx.letterSpacing = (ls !== undefined ? ls : -size * 0.03) + "px"; var w = ctx.measureText(s).width; ctx.letterSpacing = "0px"; return w; }
+function reveal(s, x, y, p, o) {
+  if (p <= 0) return; o = o || {};
+  var size = o.size || 40, k = eo5(clamp(p)), w = measure(s, size, o.weight, o.ls, o.fam);
+  var x0 = o.align === "center" ? x - w / 2 : o.align === "right" ? x - w : x;
+  ctx.save(); ctx.beginPath(); ctx.rect(x0 - 40, y - size * 1.1, w + 80, size * 1.45); ctx.clip();
+  text(s, x, y + (1 - k) * size * 1.15, o); ctx.restore();
+}
+function caps(s, x, y, p, o) { o = o || {}; reveal(s.toUpperCase(), x, y, p, { size: o.size || 20, weight: o.weight || (o.size >= 40 ? 800 : 700), ls: o.ls || 3, color: o.color || C.acc, align: o.align, alpha: o.alpha }); }
+function line(x1, y1, x2, y2, col, w, a) { ctx.globalAlpha = SA * (a === undefined ? 1 : a); ctx.strokeStyle = col; ctx.lineWidth = w || 2; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.globalAlpha = 1; }
+function rect(x, y, w, h, fill, stroke, lw, a, r) {
+  ctx.globalAlpha = SA * (a === undefined ? 1 : a); ctx.beginPath(); if (r) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 2; ctx.stroke(); } ctx.globalAlpha = 1;
+}
+function dot(x, y, r, fill, a) { if (!(r > 0)) return; ctx.globalAlpha = SA * (a === undefined ? 1 : a); ctx.fillStyle = fill; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill(); ctx.globalAlpha = 1; }
+function ring(x, y, r, col, w, a, from, to) { ctx.globalAlpha = SA * (a === undefined ? 1 : a); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.arc(x, y, r, from || 0, to === undefined ? 6.2832 : to); ctx.stroke(); ctx.globalAlpha = 1; }
+function header(t, a, b, num, title, sub) {
+  var k = vis(t, a, b, 0.01, 0.01); if (!k) return; var s0 = SA; SA = k;
+  /* chapter number removed for the website: the page shows the steps */
+  if (title) caption(title, t, a);
+  if (sub) reveal(sub, 120, 336, seg(t, a + 0.2, a + 0.7), { size: 28, weight: 500, color: C.soft, ls: -0.4 });
+  SA = s0;
+}
+
+/* captions sit top centre, just under the page's step bar, on one or two balanced lines */
+var CAP_Y = 222, CAP_S = 62;
+function capLines(s, size, maxW) {
+  var words = s.split(" "), all = [words.join(" ")];
+  if (measure(all[0], size, 800, -1.6) <= maxW) return all;
+  var best = null;
+  for (var i = 1; i < words.length; i++) {
+    var a = words.slice(0, i).join(" "), b = words.slice(i).join(" "), m = Math.max(measure(a, size, 800, -1.6), measure(b, size, 800, -1.6));
+    if (!best || m < best[0]) best = [m, [a, b]];
+  }
+  return best[1];
+}
+function caption(s, t, at) {
+  capLines(s, CAP_S, 960).forEach(function (ln, j) {
+    reveal(ln, 540, CAP_Y + j * CAP_S * 1.1, seg(t, at + 0.04 + j * 0.08, at + 0.42 + j * 0.08), { size: CAP_S, weight: 800, align: "center", ls: -1.6 });
+  });
+}
+
+/* ---------- persistent layers ---------- */
+function background(t) { /* transparent: the model shows through */ }
+function hud(t) {
+  /* v12: no progress bar */
+}
+
+/* ---------- the market: rows, purchases, prices ---------- */
+var LADDER = [6, 8, 10, 12, 15, 18, 22, 27, 33, 40, 48, 60, 72, 86, 100, 120, 150, 180, 215, 260];
+var ROWS = [
+  { n: "Balsa sticks", s: "Premium · easy to build", r: 15 }, { n: "Hot-glue gun", s: "Premium · 10-min hire", r: 14 },
+  { n: "Masking tape", s: "Scarce", r: 11 }, { n: "Bamboo skewers", s: "Mid-range", r: 9 },
+  { n: "Newspaper", s: "Cheap · needs skill", r: 1 }, { n: "Expert Tip card", s: "Know-how", r: 13 },
+  { n: "Trusted Blueprints", s: "Proven designs", r: 15 }, { n: "Spy card", s: "See a rival's plan", r: 15 }
+];
+// who tends to buy what
+var PREF = [[0, 0, 1, 2, 0, 1, 2, 6], [4, 4, 5, 6, 4, 2, 7, 4], [4, 7, 4, 3, 4, 4, 4, 4], [3, 3, 2, 2, 3, 2, 6, 3], [1, 1, 2, 2, 1, 0, 2, 2]];
+var BUYS = [], HIST = ROWS.map(function (r) { return [[0, r.r]]; }), SPENT = [[], [], [], [], []];
+(function () {
+  var r = rng(41), eighth = (B1(13) - B1(12)) / 2, cnt = ROWS.map(function () { return 0; }), rung = ROWS.map(function (x) { return x.r; });
+  var events = [];
+  for (var g = 0; g < 46; g++) {           // eighth notes from the bar after the market opens
+    var land = B1(19) + g * eighth;
+    if (land > B1(35) - 0.1) break;
+    var busy = 0.6 + 0.4 * clamp(g / 24);
+    if (r() < busy) events.push({ t: land, team: Math.floor(r() * 5) });
+    if (g > 8 && r() < busy * 0.8) events.push({ t: land + eighth * 0.5, team: Math.floor(r() * 5) });
+  }
+  events.sort(function (a, b) { return a.t - b.t; });
+  var lastBuy = ROWS.map(function () { return T_TRADE; }), CAP = [850, 380, 150, 720, 1000], spent = [0, 0, 0, 0, 0];
+  events.forEach(function (e) {
+    var row = PREF[e.team][Math.floor(r() * 8)];
+    if (spent[e.team] + LADDER[rung[row]] > CAP[e.team]) { row = 4; if (spent[e.team] + LADDER[rung[4]] > CAP[e.team]) return; }
+    spent[e.team] += LADDER[rung[row]];
+    ROWS.forEach(function (x, i) { if (e.t - lastBuy[i] > 2.2 && rung[i] > 0 && i !== 2) { rung[i]--; HIST[i].push([e.t - 0.01, rung[i]]); lastBuy[i] = e.t; } });
+    var price = LADDER[rung[row]];
+    BUYS.push({ t: e.t, team: e.team, row: row, price: price, n: Math.min(price, 90) });
+    SPENT[e.team].push([e.t - 0.62, price]);
+    lastBuy[row] = e.t;
+    if (++cnt[row] % 2 === 0 || row === 2) { rung[row] = Math.min(LADDER.length - 1, rung[row] + 1); HIST[row].push([e.t, rung[row]]); }
+  });
+})();
+var RANGE = HIST.map(function (h) { var a = h.map(function (q) { return q[1]; }); return [Math.min.apply(null, a), Math.max.apply(null, a)]; });
+var rungAt = function (i, t) { var h = HIST[i], r = h[0][1]; for (var k = 0; k < h.length; k++) if (h[k][0] <= t) r = h[k][1]; return r; };
+var changeAt = function (i, t) { var h = HIST[i], c = null; for (var k = 1; k < h.length; k++) if (h[k][0] <= t) c = [h[k][0], h[k][1], h[k - 1][1]]; return c; };
+var spentAt = function (team, t) { var s = 0; SPENT[team].forEach(function (p) { if (p[0] <= t) s += p[1]; }); return Math.min(1000, s); };
+
+/* ---------- ticker ---------- */
+function ticker(t) {
+  var a = vis(t, T_TRADE, T_BUILD, 0.01, 0.01); if (!a) return; var s0 = SA; SA = a;
+  var y = 0, h = 60;
+  rect(0, y, W, h, C.panel);
+  var parts = [];
+  ROWS.forEach(function (r, i) {
+    var ch = changeAt(i, t), up = ch && ch[1] > ch[2];
+    parts.push([r.n.toUpperCase() + "  ", C.onP], [String(LADDER[rungAt(i, t)]) + "  ", "#FFFFFF"], [(ch ? (up ? "▲" : "▼") : "◆") + "        ", ch ? (up ? C.acc : "#6FE0C8") : C.onPs]);
+  });
+  var total = 0; parts.forEach(function (p) { total += measure(p[0], 28, 700, 1.2); });
+  var x = -((t - T_BID + 4) * 170) % total;
+  for (var rep = 0; rep < 3; rep++) parts.forEach(function (p) { var w = measure(p[0], 28, 700, 1.2); if (x > -400 && x < W + 50) text(p[0], x, y + 40, { size: 28, weight: 700, color: p[1], ls: 1.2 }); x += w; });
+  SA = s0;
+}
+
+/* ---------- team credit piles: 250 dots each, one dot = 4 credits ---------- */
+var PILE = { cols: 14, rows: 18, step: 11.6, r: 5.0, y: 470, x: 88, gap: 186 };
+var CY = 0;                                   // the column's vertical offset: centred first, then slid up for the bank
+var colY = function (t) { return 320 * (1 - eio(seg(t, T_SLIDE, T_SLIDE + 0.5))); };
+var colS = function (t) { return lerp(1.12, 1, eio(seg(t, T_SLIDE, T_SLIDE + 0.5))); };   // centred column a touch larger, settling as it slides up
+function pileXY(i, n) { var x0 = PILE.x + i * PILE.gap; return [x0 + (n % PILE.cols) * PILE.step, PILE.y + CY + (PILE.rows - 1 - Math.floor(n / PILE.cols)) * PILE.step]; }
+var dotsLeft = function (i, t) { return Math.min(250, Math.round((1000 - spentAt(i, t)) / 4)); };
+var FILL0 = function (i) { return T_BID + 0.1 + i * 0.05; }, FILL_D = 0.9;
+function drawPiles(t) {
+  for (var i = 0; i < 5; i++) {
+    var left = dotsLeft(i, t), rf = seg(t, FILL0(i), FILL0(i) + FILL_D) * (PILE.rows + 1.5);
+    if (rf <= 0) continue;
+    ctx.fillStyle = TEAM[i];
+    for (var n = 0; n < left; n++) {
+      var rr = Math.floor(n / PILE.cols), k = clamp(rf - rr); if (k <= 0) break;
+      var p = pileXY(i, n);
+      ctx.globalAlpha = SA * clamp(k * 2.5); ctx.beginPath(); ctx.arc(p[0], p[1] - (1 - eo(k)) * 18, PILE.r, 0, 6.2832); ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ---------- blocks: the banks, running to the screen edge ---------- */
+function block(x0, x1, y, a, edge) {
+  ctx.save(); ctx.globalAlpha = SA * a * HATCH_A; ctx.strokeStyle = C.ink; ctx.lineWidth = HATCH_W; ctx.lineCap = "butt";
+  var SPAN = Math.max(H, VY1 - y + 60);
+  ctx.beginPath(); ctx.rect(x0, y, x1 - x0, VY1 - y + 20); ctx.clip(); ctx.beginPath();
+  for (var i = -SPAN; i < x1 - x0 + 22; i += 22) { ctx.moveTo(x0 + i, y); ctx.lineTo(x0 + i + SPAN, y + SPAN); } ctx.stroke(); ctx.restore(); ctx.globalAlpha = 1;
+  line(x0, y, x1, y, C.ink, 3, a);
+  line(edge, y, edge, VY1 + 20, C.ink, 3, a);
+}
+var HATCH_W = 1.2, HATCH_A = 0.85;
+function abutments(t, a, rise) {
+  var y = lerp(VY1 + 40, DECK, eo(rise));
+  block(VX0 - 10, X0, y, a, X0); block(X1, VX1 + 10, y, a, X1);
+}
+/* ---------- the logo, redrawn from the supplied artwork (in the artwork's 1376 x 768 space) ---------- */
+var LOGO = {
+  deck: [270, 1105, 278, 3], wick: 3.6,
+  // [centre x, wick top, body top, body bottom, wick bottom, body width]
+  candles: [[340.5, 249, 266, 279, 298, 24], [379.5, 227, 249, 279, 288, 24], [418.5, 185, 213, 266, 278, 24], [457.5, 125, 155, 254, 278, 24],
+            [497.5, 39, 72, 323, 323, 26], [537, 98, 128, 243, 278, 23], [576.5, 154, 183, 268, 278, 24], [616, 190, 213, 279, 288, 23],
+            [655, 208, 231, 279, 299, 24], [694.5, 217, 248, 279, 298, 24], [734, 208, 232, 279, 298, 24], [773, 190, 213, 279, 288, 24],
+            [812, 154, 183, 268, 278, 23], [851, 98, 128, 243, 278, 23], [891, 39, 72, 323, 323, 26], [930.5, 125, 155, 254, 278, 24],
+            [970, 185, 213, 266, 278, 23], [1008.5, 226, 245, 279, 288, 25], [1048.5, 249, 266, 279, 298, 24]],
+  // each letter placed on the artwork's own letter box: [char, ink left, ink right]
+  lines: [{ size: 181.5, base: 453, dark: true, g: [["T", 145, 263], ["H", 271, 398], ["E", 410, 517], ["B", 556, 674], ["R", 681, 803], ["I", 808, 848], ["D", 861, 989], ["G", 996, 1131], ["E", 1141, 1248]] },
+          { size: 186.5, base: 592, dark: false, g: [["E", 151, 262], ["X", 267, null], ["C", null, 535], ["H", 546, 677], ["A", 682, 832], ["N", 840, 975], ["G", 985, 1125], ["E", 1135, 1245]] }],
+  sub: { s: "TEAM BUILDING & LEADERSHIP", size: 42.9, ink: [305, 1067], base: 669, weight: 500 }
+};
+var LOGO_N = LOGO.candles.length;
+function candleStart(i) { return i / (LOGO_N + 3); }          // in candle progress units, left to right
+function logoGlyph(ch, size, box) {
+  ctx.font = "900 " + size + "px MontLogo"; ctx.letterSpacing = "0px";
+  var m = ctx.measureText(ch), L = m.actualBoundingBoxLeft, R = m.actualBoundingBoxRight;
+  if (box[1] === null) return box[2] - R;
+  if (box[2] === null) return box[1] + L;
+  return (box[1] + box[2]) / 2 - (R - L) / 2;
+}
+// cp: candle progress, tp: lettering progress, sp: subtitle progress (0 hides it)
+function drawLogo(tx, ty, sc, cp, tp, sp) {
+  ctx.save(); ctx.translate(tx, ty); ctx.scale(sc, sc); ctx.globalAlpha = SA;
+  var dk = LOGO.deck;
+  if (cp > 0) { ctx.fillStyle = C.ink; ctx.fillRect(dk[0], dk[2] - dk[3] / 2, (dk[1] - dk[0]) * Math.min(1, cp * 1.06), dk[3]); }
+  LOGO.candles.forEach(function (cd, i) {
+    var k = clamp((cp - candleStart(i)) * (LOGO_N + 3) / 4); if (k <= 0) return;
+    var e = eback(k), mid = dk[2], sy = function (y) { return mid + (y - mid) * e; };
+    ctx.fillStyle = C.ink;
+    ctx.fillRect(cd[0] - LOGO.wick / 2, sy(cd[1]), LOGO.wick, sy(cd[4]) - sy(cd[1]));
+    ctx.fillRect(cd[0] - cd[5] / 2, sy(cd[2]), cd[5], sy(cd[3]) - sy(cd[2]));
+  });
+  LOGO.lines.forEach(function (ln, j) {
+    var k = eo5(clamp(j === 0 ? tp : tp * 1.2 - 0.2)); if (k <= 0) return;
+    ctx.save(); ctx.beginPath(); ctx.rect(0, ln.base - ln.size * 0.8, 1376, ln.size * 0.84); ctx.clip();
+    ctx.fillStyle = ln.dark ? C.ink : C.acc; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    ln.g.forEach(function (gl) { var x = logoGlyph(gl[0], ln.size, gl); ctx.font = "900 " + ln.size + "px MontLogo"; ctx.fillText(gl[0], x, ln.base + (1 - k) * ln.size * 0.9); });
+    ctx.restore();
+  });
+  if (sp > 0) {
+    var S = LOGO.sub; ctx.font = S.weight + " " + S.size + "px MontLogo"; ctx.letterSpacing = "0px";
+    var m = ctx.measureText(S.s), w0 = m.actualBoundingBoxRight + m.actualBoundingBoxLeft, ls = (S.ink[1] - S.ink[0] - w0) / (S.s.length - 1);
+    ctx.letterSpacing = ls + "px"; var m2 = ctx.measureText(S.s), inkW = m2.actualBoundingBoxRight + m2.actualBoundingBoxLeft;
+    var kx = eo5(clamp(sp)), sx0 = 696.5 - inkW / 2 + m2.actualBoundingBoxLeft;          // centred on the logo's axis
+    ctx.save(); ctx.beginPath(); ctx.rect(0, S.base - S.size * 1.05, 1376, S.size * 1.35); ctx.clip();
+    ctx.fillStyle = C.ink; ctx.globalAlpha = SA; ctx.fillText(S.s, sx0, S.base + (1 - kx) * S.size * 1.15); ctx.restore(); ctx.letterSpacing = "0px";
+  }
+  ctx.restore(); ctx.globalAlpha = 1;
+}
+var LOGO_S = 0.74;   // the same size at the start and the end
+var LOGO_OPEN = { s: LOGO_S, tx: 540 - 696.5 * LOGO_S, ty: 580 };       // opening: no subtitle, Bid. Build. Break. below
+var LOGO_END = { s: LOGO_S, tx: 540 - 696.5 * LOGO_S, ty: 500 };        // closing: with subtitle, dots and the details below
+
+/* ================= scenes ================= */
+function sceneIntro(t) {
+  if (t >= T_TITLE) return; SA = 1;
+  var size = 176, wt = 900, ls = -size * 0.045, out = eo(seg(t, T_TITLE - 0.22, T_TITLE)), lift = out * size * 1.2;
+  var LINES = [["See what", 760], ["your team", 944]], L2 = "can carry.", y2 = 1128;
+  var land = B1(2), drop0 = land - 0.26;
+  // after the load lands: a damped bounce, deepest in the middle of each line
+  var dt = t - land, bend = dt > 0 ? Math.exp(-dt * 4.0) * Math.sin(dt * 17) * 26 : 0, n = 0;
+  LINES.forEach(function (ln, li) {
+    var L1 = ln[0], y1 = ln[1], w1 = measure(L1, size, wt, ls), x1 = 540 - w1 / 2;
+    ctx.save(); ctx.beginPath(); ctx.rect(VX0, y1 - size * 1.0, VX1 - VX0, size * 1.3); ctx.clip();
+    for (var i = 0; i < L1.length; i++, n++) {
+      var ch = L1[i]; if (ch === " ") continue;
+      var cx = x1 + measure(L1.substr(0, i), size, wt, ls), cw = measure(ch, size, wt, ls);
+      var at = B1(0) + n * 0.03, k = eback(seg(t, at, at + 0.42)); if (k <= 0) continue;
+      var u = Math.sin(Math.PI * clamp((cx + cw / 2 - x1) / w1)) * (li ? 1 : 0.6);
+      text(ch, cx, y1 + (1 - k) * size * 0.95 + bend * u - lift, { size: size, weight: wt, ls: ls, color: C.ink, alpha: clamp(k * 1.6) });
+    }
+    ctx.restore();
+  });
+  // the load: it falls into its line with gravity, then settles with the deck
+  var f = seg(t, drop0, land);
+  if (f > 0) {
+    var w2 = measure(L2, size, wt, ls);
+    ctx.save(); ctx.beginPath(); ctx.rect(VX0, y2 - size * 1.0, VX1 - VX0, size * 1.3); ctx.clip();
+    var fy = t < land ? -(1 - f * f) * size * 1.15 : bend * 0.6;
+    text(L2, 540 - w2 / 2, y2 + fy - lift, { size: size, weight: wt, ls: ls, color: C.acc });
+    ctx.restore();
+  }
+  SA = 1;
+}
+function sceneTitle(t) {
+  if (t < T_TITLE || t >= T_BID) return; SA = 1;
+  var L = LOGO_OPEN, cp = seg(t, T_TITLE + 0.12, T_TITLE + 0.12 + CANDLE_D);
+  drawLogo(L.tx, L.ty, L.s, cp, seg(t, T_TITLE, T_TITLE + 0.42), 0);
+  var yb = L.ty + 592 * L.s + 140;
+  ["Bid.", "Build.", "Break."].forEach(function (w, k) {
+    var at = B1(8 + k), p = seg(t, at, at + 0.22), sc = lerp(1.5, 1, eo(p));
+    ctx.save(); ctx.translate([270, 540, 810][k], yb); ctx.scale(sc, sc);
+    text(w, 0, 0, { size: 76, weight: 800, align: "center", alpha: p, color: k === 2 ? C.acc : C.ink }); ctx.restore();
+  });
+  SA = 1;
+}
+var CANDLE_D = 0.8;
+var BOARD = { x: 60, y: 826, w: 960, rowH: 84 };
+function rowY(i) { return BOARD.y + 88 + i * BOARD.rowH; }
+function sceneBid(t) {
+  if (t < T_BID || t >= T_BUILD) return; var A = 1; SA = 1;
+  header(t, T_BID, T_BUILD, "01 — Bid", null, null);
+  // a thousand credits per team, shown as piles of dots: centred and a touch larger first, then slid up for the bank
+  CY = colY(t); var CS = colS(t), PV = 539 + CY;
+  ctx.save(); ctx.translate(540, PV); ctx.scale(CS, CS); ctx.translate(-540, -PV);
+  if (t < T_SLIDE + 0.3) {
+    var cu = Math.round(eo(seg(t, FILL0(0), FILL0(4) + FILL_D)) * 1000), ca = 1 - seg(t, T_SLIDE, T_SLIDE + 0.3);
+    reveal(fmt(cu), PILE.x - 4, 368 + CY, seg(t, T_BID + 0.02, T_BID + 0.35), { size: 88, weight: 900, ls: -3, alpha: ca });
+    reveal("credits per team", PILE.x + 10 + measure("1,000", 88, 900, -3), 366 + CY, seg(t, T_BID + 0.15, T_BID + 0.5), { size: 38, weight: 600, color: C.soft, ls: -0.4, alpha: ca });
+  }
+  drawPiles(t);
+  for (var i = 0; i < 5; i++) {
+    var cxp = PILE.x + i * PILE.gap + 75, la = seg(t, T_BID + 0.2, T_BID + 0.5);
+    dot(cxp, 724 + CY, 18, TEAM[i], la); text("ABCDE"[i], cxp, 731 + CY, { size: 19, weight: 800, align: "center", color: "#fff", alpha: la, ls: 0 });
+    text(fmt(1000 - spentAt(i, t)), cxp, 776 + CY, { size: 34, weight: 800, align: "center", color: TEAM[i], alpha: la, ls: -0.5 });
+  }
+  ctx.restore();
+  // the captions, one at a time, top centre
+  [[B1(13), B1(19), "Each team buys from one shared material bank."], [B1(19), B1(27), "Every purchase moves the price for everyone."], [B1(27), T_BUILD, "Expertise is for sale too."]].forEach(function (c) {
+    if (t >= c[0] && t < c[1]) caption(c[2], t, c[0]);
+  });
+  // the material bank, index-2 style
+  var bp = eio(seg(t, T_SLIDE, T_SLIDE + 0.5)); if (bp <= 0) { SA = 1; return; }
+  var bx = BOARD.x, by = BOARD.y + (1 - bp) * 1100;
+  SA = A;
+  rect(bx, by, BOARD.w, 88 + ROWS.length * BOARD.rowH + 24, C.panel, null, 0, 1, 22);
+  text("MATERIAL BANK", bx + 30, by + 56, { size: 23, weight: 700, color: C.onPs, ls: 2.8 });
+  var pulse = 0.4 + 0.6 * Math.abs(Math.sin(t * 5));
+  dot(bx + BOARD.w - 246, by + 48, 8, C.acc, pulse); text("LIVE MARKET", bx + BOARD.w - 30, by + 56, { size: 23, weight: 700, color: "#fff", align: "right", ls: 2.8 });
+  ROWS.forEach(function (r, i) {
+    var y = rowY(i) + (by - BOARD.y), ra = seg(t, T_SLIDE + 0.25 + i * 0.04, T_SLIDE + 0.5 + i * 0.04); SA = A * ra;
+    var ch = changeAt(i, t), fl = ch ? 1 - seg(t, ch[0], ch[0] + 0.35) : 0, up = ch && ch[1] > ch[2];
+    if (fl > 0) rect(bx + 14, y - 4, BOARD.w - 28, BOARD.rowH - 6, up ? "rgba(255,96,0," + (0.22 * fl) + ")" : "rgba(111,224,200," + (0.16 * fl) + ")", null, 0, 1, 10);
+    line(bx + 30, y - 6, bx + BOARD.w - 30, y - 6, "rgba(237,243,246,0.10)", 1);
+    text(r.n, bx + 30, y + 38, { size: 36, weight: 600, color: "#fff", ls: -0.6 });
+    text(r.s.toUpperCase(), bx + 30, y + 66, { size: 18, weight: 700, color: i >= 5 ? "#FFB27A" : C.onPs, ls: 1.6 });
+    // price history: a dented, volatile polyline drawn live, left to right
+    var sx = bx + 440, sw = 220, rg = RANGE[i], span = Math.max(3, rg[1] - rg[0]), mid = (rg[0] + rg[1]) / 2, H_ = HIST[i];
+    var px = function (tt) { return sx + clamp((tt - T_TRADE) / (T_BUILD - 0.3 - T_TRADE)) * sw; };
+    var vAt = function (tt) {
+      var v = H_[0][1];
+      for (var q = 1; q < H_.length; q++) {
+        if (H_[q][0] > tt) break;
+        var d = H_[q][1] - H_[q - 1][1], u = tt - H_[q][0];
+        v = H_[q][1] + (u < 0.12 ? -d * (1 - u / 0.12) : d * 0.3 * Math.exp(-(u - 0.12) / 0.25) * Math.cos((u - 0.12) * 12));
+      }
+      return v + 0.1 * (Math.sin(tt * 4.3 + i * 1.7) + 0.6 * Math.sin(tt * 8.9 + i * 4.1)) * clamp((tt - T_TRADE) * 2);
+    };
+    var py = function (v) { return clamp(y + 38 - (v - mid) / span * 60, y + 6, y + 76); };
+    var pts = [];
+    for (var tt = T_TRADE; tt < t; tt += 0.1) pts.push([px(tt), py(vAt(tt))]);
+    pts.push([px(t), py(vAt(Math.max(T_TRADE, t)))]);
+    ctx.globalAlpha = SA * 0.95; var pcol = ch ? (up ? "#FF8A3D" : "#6FE0C8") : "#BFD0D8"; ctx.strokeStyle = pcol; ctx.lineWidth = 2.8; ctx.lineJoin = "miter"; ctx.lineCap = "butt"; ctx.beginPath();
+    pts.forEach(function (q, k) { if (k === 0) ctx.moveTo(q[0], q[1]); else ctx.lineTo(q[0], q[1]); });
+    ctx.stroke(); ctx.globalAlpha = 1;
+    var lx = pts[pts.length - 1][0], ly = pts[pts.length - 1][1];
+    if (t > T_TRADE) dot(lx, ly, 4.4, pcol);
+    var price = LADDER[rungAt(i, t)], sc = 1 + 0.25 * fl;
+    ctx.save(); ctx.translate(bx + BOARD.w - 150, y + 52); ctx.scale(sc, sc);
+    text(String(price), 0, 0, { size: 48, weight: 800, color: fl > 0 ? mix("#FFFFFF", up ? "#FF8A3D" : "#6FE0C8", fl) : "#fff", align: "right", ls: -0.5 }); ctx.restore();
+    if (ch) { var pct = Math.round((LADDER[ch[1]] - LADDER[ch[2]]) / LADDER[ch[2]] * 100); text((pct > 0 ? "▲ +" : "▼ ") + pct + "%", bx + BOARD.w - 26, y + 48, { size: 25, weight: 700, color: pct > 0 ? "#FF8A3D" : "#6FE0C8", align: "right", ls: 0 }); }
+  });
+  SA = A;
+  // purchases: each credit spent flies as a dot from the team into the bank
+  BUYS.forEach(function (b) {
+    var t0 = b.t - 0.62; if (t < t0 || t > b.t + 0.05) return;
+    var left0 = dotsLeft(b.team, t0 - 0.001), nd = Math.min(Math.round(b.price / 4), 40);
+    var tx = bx + 26, ty = rowY(b.row) + 40 + (by - BOARD.y);
+    for (var j = 0; j < nd; j++) {
+      var k = clamp((t - t0 - j * 0.008) / 0.55); if (k <= 0 || k >= 1) continue;
+      var n = left0 - 1 - j; if (n < 0) continue;
+      var sp = pileXY(b.team, n), e = eio(k), x = lerp(sp[0], tx, e), y = lerp(sp[1], ty, e) - Math.sin(Math.PI * e) * (60 + (j % 7) * 12);
+      dot(x, y, 5.2 * (1 - 0.3 * e), TEAM[b.team]);
+    }
+  });
+  SA = 1;
+}
+
+/* ---------- the build: dots draw five bridge typologies ---------- */
+var DECK = 1240;
+function polyPts(polys, N) {
+  var segs = [], total = 0;
+  polys.forEach(function (p) { for (var i = 0; i < p.length - 1; i++) { var L = Math.hypot(p[i + 1][0] - p[i][0], p[i + 1][1] - p[i][1]); segs.push([p[i], p[i + 1], L]); total += L; } });
+  var out = [];
+  for (var n = 0; n < N; n++) {
+    var d = (n + 0.5) / N * total, acc = 0;
+    for (var s = 0; s < segs.length; s++) { if (acc + segs[s][2] >= d) { var k = (d - acc) / segs[s][2]; out.push([lerp(segs[s][0][0], segs[s][1][0], k), lerp(segs[s][0][1], segs[s][1][1], k)]); break; } acc += segs[s][2]; }
+  }
+  while (out.length < N) out.push(out[out.length - 1]);
+  return out;
+}
+function curve(f, x0, x1, n) { var p = []; for (var i = 0; i <= n; i++) { var x = lerp(x0, x1, i / n); p.push([x, f(x)]); } return p; }
+var X0 = 110, X1 = 970, MIDX = 540;
+var NPTS = 210;
+var SHAPES = (function () {
+  var beam = [[[X0 - 20, DECK], [X1 + 20, DECK]], [[X0 - 20, DECK - 46], [X1 + 20, DECK - 46]], [[X0 - 20, DECK], [X0 - 20, DECK - 46]], [[X1 + 20, DECK], [X1 + 20, DECK - 46]]];
+  for (var i = 1; i < 10; i++) beam.push([[lerp(X0, X1, i / 10), DECK], [lerp(X0, X1, i / 10), DECK - 46]]);
+  var truss = [[[X0 - 20, DECK], [X1 + 20, DECK]]], NP = 6, D = 120;
+  for (var j = 0; j < NP; j++) { var a = lerp(X0, X1, j / NP), b = lerp(X0, X1, (j + 1) / NP), m = (a + b) / 2; truss.push([[a, DECK], [m, DECK - D], [b, DECK]]); if (j < NP - 1) truss.push([[m, DECK - D], [m + (X1 - X0) / NP, DECK - D]]); }
+  var cable = function (x) { var u = (x - MIDX) / (MIDX - X0); return DECK - 40 - 200 * (1 - (1 - u * u)) - 0; };
+  var susp = [[[X0 - 60, DECK], [X1 + 60, DECK]], [[X0, DECK + 10], [X0, DECK - 250]], [[X1, DECK + 10], [X1, DECK - 250]], curve(function (x) { var u = (x - MIDX) / (MIDX - X0); return DECK - 30 - 220 * u * u; }, X0, X1, 40), [[X0, DECK - 250], [X0 - 200, DECK + 20]], [[X1, DECK - 250], [X1 + 200, DECK + 20]]];
+  for (var h = 1; h < 12; h++) { var x = lerp(X0, X1, h / 12), u = (x - MIDX) / (MIDX - X0); susp.push([[x, DECK], [x, DECK - 30 - 220 * u * u]]); }
+  var archY = function (x) { var u = (x - MIDX) / (MIDX - X0); return DECK + 170 - 150 * (1 - u * u); };
+  var arch = [[[X0 - 20, DECK], [X1 + 20, DECK]], curve(archY, X0, X1, 40)];
+  for (var s = 1; s < 10; s++) { var xs = lerp(X0, X1, s / 10); arch.push([[xs, archY(xs)], [xs, DECK]]); }
+  var invY = function (x) { var u = (x - MIDX) / (MIDX - X0); return DECK + 150 * (1 - u * u); };
+  var inv = [[[X0 - 20, DECK], [X1 + 20, DECK]], curve(invY, X0, X1, 40)];
+  for (var v = 1; v < 10; v++) { var xv = lerp(X0, X1, v / 10); inv.push([[xv, DECK], [xv, invY(xv)]]); }
+  return [beam, truss, susp, arch, inv].map(function (p) { return polyPts(p, NPTS); });
+})();
+var TYPO = ["Beam", "Truss", "Suspension", "Arch", "Inverted arch"];
+var SCAT = (function () { var r = rng(77), a = []; for (var i = 0; i < NPTS; i++) a.push([90 + r() * 900, 470 + r() * 330, r()]); return a; })();
+// shape sequence on the beat: A beam, B truss, C suspension, D arch, E inverted arch, then back to B's truss
+var SEQ = [[B1(37), 0], [B1(39), 1], [B1(41), 2], [B1(43), 3], [B1(45), 4], [B1(47), 1]];
+function shapeAt(t) {
+  var cur = SEQ[0], prev = null;
+  for (var i = 0; i < SEQ.length; i++) if (t >= SEQ[i][0] - 0.3) { prev = i > 0 ? SEQ[i - 1] : null; cur = SEQ[i]; }
+  return { cur: cur, prev: prev };
+}
+function buildDots(t, alpha) {
+  var st = shapeAt(t), k = seg(t, st.cur[0] - 0.3, st.cur[0] + 0.25);
+  var from = st.prev ? SHAPES[st.prev[1]] : null, to = SHAPES[st.cur[1]];
+  var team = st.cur[1], colFrom = st.prev ? TEAM[st.prev[1]] : TEAM[0];
+  for (var i = 0; i < NPTS; i++) {
+    var kk = eio(clamp(k * 1.5 - (i % 37) / 37 * 0.5));
+    var x0, y0;
+    if (from) { x0 = from[i][0]; y0 = from[i][1]; } else { var sk = eio(clamp(seg(t, T_BUILD, B1(37) + 0.2) * 1.4 - SCAT[i][2] * 0.4)); x0 = lerp(SCAT[i][0], to[i][0], clamp(sk)); y0 = lerp(SCAT[i][1], to[i][1], clamp(sk)); kk = 0; }
+    var x = lerp(x0, to[i][0], kk), y = lerp(y0, to[i][1], kk) - Math.sin(Math.PI * kk) * 26 * ((i % 5) - 2) / 2;
+    dot(x, y, 5.8, kk > 0.5 || !from ? TEAM[team] : colFrom, alpha);
+  }
+}
+function sceneBuild(t) {
+  if (t < T_BUILD || t > T_BREAK + 0.35) return; var A = 1; SA = 1;
+  header(t, T_BUILD, T_BREAK, "02 — Build", "Every team designs its own bridge.", null);
+  abutments(t, 1, seg(t, T_BUILD, T_BUILD + 0.45));
+  var fade = 1 - seg(t, T_BREAK, T_BREAK + 0.35);
+  buildDots(t, fade);
+  // the label of the current typology
+  var st = shapeAt(t), li = st.cur[1], la = seg(t, st.cur[0] - 0.05, st.cur[0] + 0.25) * (t < T_BREAK ? 1 : 0);
+  if (t > B1(37) - 0.3) {
+    var who = SEQ.indexOf(st.cur) === 5 ? "Team B" : "Team " + "ABCDE"[li];
+    reveal(who.toUpperCase(), 540, 800, la, { size: 30, weight: 800, align: "center", color: TEAM[li], ls: 4 });
+    reveal(TYPO[li], 540, 892, la, { size: 88, weight: 800, align: "center", color: C.ink, ls: -2 });
+  }
+  SA = 1;
+}
+
+/* ---------- the break (from final-2) ---------- */
+var NP = 6, DEPTH = 120;
+function nodes() { var b = [], tp = []; for (var i = 0; i <= NP; i++) b.push([lerp(X0, X1, i / NP), DECK]); for (var j = 0; j < NP; j++) tp.push([lerp(X0, X1, (j + 0.5) / NP), DECK - DEPTH]); return { b: b, t: tp }; }
+var MEM = (function () { var m = []; for (var i = 0; i < NP; i++) m.push(["b", i, "b", i + 1, 0]); for (var j = 0; j < NP; j++) { m.push(["b", j, "t", j, 1]); m.push(["t", j, "b", j + 1, 1]); } for (var k = 0; k < NP - 1; k++) m.push(["t", k, "t", k + 1, 2]); return m; })();
+var DEBRIS = (function () { var r = rng(7), d = []; for (var i = 0; i < 70; i++) d.push({ vx: (r() - 0.5) * 1000, vy: -r() * 650 - 100, rot: (r() - 0.5) * 18, len: 10 + r() * 34, dot: r() < 0.5 }); return d; })();
+var L_START = B1(50), STEP8 = (B1(51) - B1(50)) / 2;
+var L_MID = L_START + 8 * STEP8, HOLD0 = L_MID + 6 * STEP8, HOLD1 = HOLD0 + 0.8, OVER = HOLD1 + 0.15;   // 16 quick pours to 8 kg, then 6 slower ones to 11 kg
+function loadAt(t) { if (t < L_START) return 0; if (t < L_MID) return Math.min(16, Math.floor((t - L_START) / (STEP8 / 2)) + 1) * 0.5; if (t < HOLD0) return 8 + Math.min(6, Math.floor((t - L_MID) / STEP8) + 1) * 0.5; if (t < OVER) return 11; return 11.5; }
+function sceneBreak(t) {
+  if (t < T_BREAK || t >= T_SCORE) return; var A = 1;
+  var L = loadAt(t), amp = t < T_SNAP ? Math.max(0, L - 8.5) * 0.7 + (t > OVER ? 1.4 : 0) : 4 * (1 - seg(t, T_SNAP, T_SNAP + 0.22));
+  ctx.save(); ctx.translate(Math.sin(t * 83) * amp, Math.cos(t * 71) * amp * 0.6);
+  SA = A;
+  header(t, T_BREAK, T_SCORE, "03 — Break", null, null);
+  abutments(t, 1, 1);
+  var N = nodes(), broke = t >= T_SNAP, bk = broke ? seg(t, T_SNAP, T_SNAP + 1.3) : 0, fall = ei(bk);
+  var defl = L * 1.8 + Math.pow(Math.max(0, L - 8), 2) * 1.8;
+  var dy = function (x) { return defl * Math.sin(Math.PI * clamp((x - X0) / (X1 - X0))); };
+  var place = function (p) {
+    var x = p[0], y = p[1] + dy(p[0]); if (!broke) return [x, y];
+    var left = x < MIDX, px = left ? X0 : X1, ang = (left ? 1 : -1) * fall * 0.85;
+    var dx = x - px, dyy = y - DECK, c = Math.cos(ang), s = Math.sin(ang);
+    return [px + dx * c - dyy * s, DECK + dx * s + dyy * c + fall * 50];
+  };
+  var drawIn = seg(t, T_BREAK, T_BREAK + 0.45);
+  MEM.forEach(function (m, idx) {
+    var a = place(N[m[0]][m[1]]), b = place(N[m[2]][m[3]]);
+    var mx = (N[m[0]][m[1]][0] + N[m[2]][m[3]][0]) / 2;
+    if (broke && Math.abs(mx - MIDX) < 80) return;
+    var u = Math.sin(Math.PI * clamp((mx - X0) / (X1 - X0))), st = clamp(L / 11.5 * (0.45 + 0.55 * u));
+    var col = st < 0.6 ? mix(TEAM[1], C.acc, st / 0.6) : mix(C.acc, C.red, (st - 0.6) / 0.4);
+    var p = eo(clamp(drawIn * 1.6 - idx / MEM.length * 0.6));
+    line(a[0], a[1], lerp(a[0], b[0], p), lerp(a[1], b[1], p), col, m[4] === 0 ? 10 : 7);
+  });
+  N.b.concat(N.t).forEach(function (n) { if (broke && Math.abs(n[0] - MIDX) < 20) return; var q = place(n); dot(q[0], q[1], 5, C.bg); ring(q[0], q[1], 5, C.ink, 2, drawIn); });
+  // the bucket, and the sand pouring in as dots
+  var bA = seg(t, L_START - 0.6, L_START - 0.1);
+  if (bA > 0) {
+    var hook = place(N.b[3]), by = hook[1] + 150 + (broke ? 0.5 * 2600 * Math.pow(t - T_SNAP, 2) : 0);
+    SA = A * bA;
+    if (!broke) line(hook[0], hook[1], hook[0], by - 60, C.soft, 2);
+    ctx.globalAlpha = SA; ctx.beginPath(); ctx.moveTo(hook[0] - 56, by - 60); ctx.lineTo(hook[0] + 56, by - 60); ctx.lineTo(hook[0] + 43, by + 30); ctx.lineTo(hook[0] - 43, by + 30); ctx.closePath();
+    ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.stroke();
+    ctx.save(); ctx.clip(); ctx.fillStyle = C.sand; var fk = clamp(L / 12); ctx.fillRect(hook[0] - 60, by + 30 - 90 * fk, 120, 90 * fk); ctx.restore(); ctx.globalAlpha = 1;
+    if ((t > L_START && t < HOLD0) || (t > HOLD1 && t < T_SNAP)) for (var g = 0; g < 90; g++) {
+      var ph = (t * 1.7 + g * 0.61803) % 1, u = Math.sin(g * 12.9898) * 43758.5453 % 1, w = lerp(96, 34, Math.pow(ph, 0.8));
+      dot(hook[0] + u * w + Math.sin(t * 9 + g) * 2, by - 400 + ph * 345, 2.4 + (g % 3) * 0.7, C.sand, 0.92 * clamp(ph * 6));
+    }
+    SA = A;
+  }
+  if (broke) {
+    var dt = t - T_SNAP;
+    DEBRIS.forEach(function (d) {
+      var x = MIDX + d.vx * dt, y = DECK + d.vy * dt + 0.5 * 2600 * dt * dt; if (y > VY1 + 50) return;
+      var a2 = 1 - seg(t, T_SNAP + 1.0, T_SNAP + 1.8);
+      if (d.dot) dot(x, y, 4, C.red, a2); else { ctx.save(); ctx.translate(x, y); ctx.rotate(d.rot * dt); line(-d.len / 2, 0, d.len / 2, 0, C.red, 5, a2); ctx.restore(); }
+    });
+  }
+  ctx.restore();
+  // the load gauge
+  SA = A * seg(t, L_START - 0.4, L_START) * (t < T_SNAP ? 1 : 0);
+  var gx = 60, gy = 460, lc = L >= 11.5 ? C.red : L >= 9 ? C.acc : C.ink;
+  text("LOAD", gx, gy, { size: 24, weight: 700, color: C.soft, ls: 2.5 });
+  text(L.toFixed(1), gx - 6, gy + 134, { size: 144, weight: 800, color: lc, ls: -5 });
+  text("kg", gx + measure(L.toFixed(1), 144, 800, -5) + 6, gy + 134, { size: 42, weight: 600, color: C.soft, ls: 0 });
+  for (var k = 0; k < 24; k++) dot(gx + 6 + k * 17, gy + 176, 5.4, k < L * 2 ? lc : "rgba(27,29,31,0.14)");
+  if (t > HOLD0 && t < T_SNAP) {
+    var hp = seg(t, HOLD0, HOLD1), ha = 1 - seg(t, T_SNAP - 0.2, T_SNAP);
+    ring(gx + 28, gy + 246, 28, TEAM[1], 6, ha, -Math.PI / 2, -Math.PI / 2 + 6.2832 * hp);
+    text(hp < 1 ? String(Math.max(0, 10 - Math.floor(hp * 10.99))) : "✓", gx + 28, gy + 256, { size: 30, weight: 800, align: "center", color: TEAM[1], alpha: ha, ls: 0 });
+    text(hp < 1 ? "HOLD 10 s" : "HELD 11.0 kg", gx + 74, gy + 256, { size: 28, weight: 800, color: TEAM[1], alpha: ha, ls: 1.5 });
+  }
+  SA = A;
+  if (t >= T_SNAP) {
+    var f = 1 - seg(t, T_SNAP, T_SNAP + 0.28);
+    ctx.fillStyle = "rgba(255,255,255," + (0.9 * f * A) + ")"; ctx.fillRect(VX0, VY0, VX1 - VX0, VY1 - VY0);
+    ctx.fillStyle = "rgba(215,38,61," + (0.18 * f * A) + ")"; ctx.fillRect(VX0, VY0, VX1 - VX0, VY1 - VY0);
+    var sp = seg(t, T_SNAP + 0.08, T_SNAP + 0.4), sc = lerp(1.5, 1, eback(sp));
+    ctx.save(); ctx.translate(540, 800); ctx.scale(sc, sc);
+    var bs = Math.min(184, 184 * 1000 / measure("BREAKING", 184, 900, -7));
+    text("BREAKING", 0, -46, { size: bs, weight: 900, align: "center", color: C.red, alpha: sp, ls: -7 });
+    text("POINT", 0, -46 + bs * 0.9, { size: bs, weight: 900, align: "center", color: C.red, alpha: sp, ls: -6 }); ctx.restore();
+  }
+  SA = 1;
+}
+
+/* ---------- the score: the formula full screen, then the cursors move the board, never settling on a winner ---------- */
+var BASE = [[1.0, 12, 150], [0.8, 11, 620], [0.5, 4, 850], [0.9, 9, 280], [1.1, 8, 0]];
+var score = function (p) { return p[0] * p[1] * (1 + p[2] / 1000); };
+var T_FREEZE = B2(19), EIGHTH2 = (B2(1) - B2(0)) / 2;
+var T_MORPH = B2(6), F_MOVE = B2(10), P_IN = B2(11);
+var LIST = [["Span", "Distance"], ["Load", "Held"], ["Unspent Budget", "Bonus"]];
+var LIST_T = [B2(0) + 0.03, B2(2) + 0.03, B2(4) + 0.03];
+var FTOK = [["Span", 0], [" × ", 1], ["Load", 0], [" × ", 1], ["(1 + ", 1], ["Unspent", 0], [" ÷ ", 1], ["Budget", 0], [")", 1]];
+var OPS = [1, 3, 4, 6, 8], OPS_T = OPS.map(function (k, j) { return T_MORPH + 0.42 + j * 0.07; });
+var FTIMES = LIST_T.concat(OPS_T);
+function params(i, t) {
+  // each team's cursors drift as if exploring strategies
+  var k = seg(t, P_IN + 0.3, T_FREEZE), ph = i * 1.7;
+  var s = clamp(BASE[i][0] + k * 0.22 * Math.sin(t * 1.9 + ph), 0.5, 1.1);
+  var l = clamp(BASE[i][1] + k * 3.2 * Math.sin(t * 1.4 + ph * 1.3) + k * (i === 2 ? 4 : 0), 2, 20);
+  var u = clamp(BASE[i][2] + k * 260 * Math.sin(t * 1.15 + ph * 0.7), 0, 900);
+  var p = [s, l, u];
+  // at the freeze the two leaders are dead level
+  var fz = eio(seg(t, T_FREEZE - 0.7, T_FREEZE));
+  if (fz > 0 && (i === 0 || i === 1)) { var target = i === 0 ? [1.0, 11.7, 300] : [0.9, 12.0, 408.3]; p = p.map(function (v, j) { return lerp(v, target[j], fz); }); }
+  return p;
+}
+function formula(t) {
+  var BIG = 122, WT = 800, LS = -4, sp = measure(" ", BIG, WT, LS);
+  // 1. the list: big black term, small grey meaning
+  var rowW = LIST.map(function (r) { return measure(r[0], BIG, WT, LS) + 24 + measure(r[1], 42, 600, -0.5); });
+  var lx0 = 540 - Math.max.apply(null, rowW) / 2, ly = [760, 930, 1100];
+  var src = { 0: [lx0, ly[0]], 2: [lx0, ly[1]], 5: [lx0, ly[2]], 7: [lx0 + measure("Unspent", BIG, WT, LS) + sp, ly[2]] };
+  var gone = seg(t, T_MORPH, T_MORPH + 0.18);
+  LIST.forEach(function (r, i) {
+    if (t < LIST_T[i] || gone >= 1) return;
+    var gx = lx0 + measure(r[0], BIG, WT, LS) + 24;
+    if (t < T_MORPH) { var p = seg(t, LIST_T[i], LIST_T[i] + 0.3); reveal(r[0], lx0, ly[i], p, { size: BIG, weight: WT, ls: LS }); }
+    reveal(r[1], gx, ly[i], seg(t, LIST_T[i] + 0.12, LIST_T[i] + 0.42), { size: 42, weight: 600, color: C.soft, ls: -0.5, alpha: 1 - gone });
+  });
+  if (t < T_MORPH) return;
+  // 2. the big words slide into a three-line formula, the orange operators drop in between them
+  var full = FTOK.map(function (x) { return x[0]; }).join(""), SMALL = Math.min(58, 58 * 964 / measure(full, 58, WT, -1.5));
+  var wB = FTOK.map(function (x) { return measure(x[0], BIG, WT, LS); }), wS = FTOK.map(function (x) { return measure(x[0], SMALL, WT, -1.5); });
+  var LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8]], FY = [760, 920, 1080], bx = [], by = [], k;
+  LINES.forEach(function (ln, li) {
+    var w = 0; ln.forEach(function (q) { w += wB[q]; });
+    var lead = FTOK[ln[0]][0][0] === " " ? sp : 0, trail = FTOK[ln[ln.length - 1]][0].slice(-1) === " " ? sp : 0;
+    var x = 540 - (w - lead - trail) / 2 - lead;
+    ln.forEach(function (q) { bx[q] = x; by[q] = FY[li]; x += wB[q]; });
+  });
+  var mv = eio(seg(t, F_MOVE, F_MOVE + 0.5)), x = 58;
+  for (k = 0; k < FTOK.length; k++) {
+    var size = lerp(BIG, SMALL, mv), col = FTOK[k][1] ? C.acc : C.ink, fx, fy;
+    if (FTOK[k][1]) {
+      var oj = OPS.indexOf(k), po = seg(t, OPS_T[oj], OPS_T[oj] + 0.2);
+      if (po > 0) {
+        fx = lerp(bx[k], x, mv); fy = lerp(by[k], 336, mv);
+        if (mv > 0) text(FTOK[k][0], fx, fy, { size: size, weight: WT, ls: lerp(LS, -1.5, mv), color: col });
+        else { var sc = lerp(1.5, 1, eo(po)); ctx.save(); ctx.translate(fx + wB[k] / 2, fy); ctx.scale(sc, sc); text(FTOK[k][0], -wB[k] / 2, 0, { size: size, weight: WT, ls: LS, color: col, alpha: clamp(po * 2) }); ctx.restore(); }
+      }
+    } else {
+      var j = [0, 2, 5, 7].indexOf(k), m = eio(seg(t, T_MORPH + j * 0.05, T_MORPH + 0.55 + j * 0.05));
+      fx = lerp(lerp(src[k][0], bx[k], m), x, mv); fy = lerp(lerp(src[k][1], by[k], m), 336, mv);
+      text(FTOK[k][0], fx, fy, { size: size, weight: WT, ls: lerp(LS, -1.5, mv), color: col });
+    }
+    x += wS[k];
+  }
+}
+function sceneScore(t) {
+  if (t < T_SCORE || t >= T_REVEAL) return; var A = 1; SA = 1;
+  header(t, T_SCORE, T_REVEAL, "04 — The Legend Score", null, null);
+  formula(t);
+  var pp = eo(seg(t, P_IN - 0.1, P_IN + 0.4)); if (pp <= 0) { SA = 1; return; }
+  // calculator panel, on top
+  var cx = 60 - (1 - pp) * 1100, cy = 410, PW = 960;
+  SA = A * pp;
+  rect(cx, cy, PW, 500, C.panel, null, 0, 1, 22);
+  text("Legend Score", cx + 38, cy + 68, { size: 44, weight: 700, color: "#fff", ls: -1 });
+  text("Strategy cursors", cx + 38, cy + 112, { size: 28, weight: 600, color: "#FF8A3D", ls: -0.2 });
+  var sel = Math.floor(Math.max(0, t - P_IN) / ((B2(2) - B2(0)))) % 5;
+  var P = params(sel, t), labels = [["Span", P[0].toFixed(1) + " m", (P[0] - 0.5) / 0.6], ["Load held", P[1].toFixed(1) + " kg", (P[1] - 2) / 18], ["Unspent", fmt(P[2]), P[2] / 900]];
+  dot(cx + 58, cy + 168, 18, TEAM[sel]); text("ABCDE"[sel], cx + 58, cy + 175, { size: 19, weight: 800, align: "center", color: "#fff", ls: 0 });
+  text(TNAME[sel], cx + 90, cy + 179, { size: 32, weight: 700, color: "#fff", ls: -0.4 });
+  labels.forEach(function (lb, j) {
+    var y = cy + 252 + j * 68;
+    text(lb[0], cx + 38, y, { size: 30, weight: 600, color: C.onP, ls: 0 });
+    rect(cx + 250, y - 12, 450, 7, "rgba(237,243,246,0.18)", null, 0, 1, 3.5);
+    rect(cx + 250, y - 12, 450 * clamp(lb[2]), 7, C.acc, null, 0, 1, 3.5);
+    dot(cx + 250 + 450 * clamp(lb[2]), y - 8.5, 14, C.acc); dot(cx + 250 + 450 * clamp(lb[2]), y - 8.5, 6, "#fff");
+    text(lb[1], cx + PW - 38, y, { size: 32, weight: 800, color: "#fff", align: "right", ls: 0 });
+  });
+  var fz = seg(t, T_FREEZE, T_FREEZE + 0.2);
+  text("Score", cx + 38, cy + 466, { size: 30, weight: 600, color: C.onPs, ls: 0 });
+  text(fz > 0.5 && (sel === 0 || sel === 1) ? "?" : score(P).toFixed(1), cx + PW - 38, cy + 474, { size: 88, weight: 800, color: "#fff", align: "right", ls: -2.5 });
+  // leaderboard panel, below
+  var lx = 60 + (1 - pp) * 1100, ly = 934;
+  rect(lx, ly, PW, 556, C.panel, null, 0, 1, 22);
+  text("Leaderboard", lx + 38, ly + 68, { size: 44, weight: 700, color: "#fff", ls: -1 });
+  var rankAt = function (tt, i) { var v = [0, 1, 2, 3, 4].map(function (j) { return score(params(j, tt)); }), r = 0; v.forEach(function (x, j) { if (j !== i && (x > v[i] + 1e-6 || (Math.abs(x - v[i]) < 1e-6 && j < i))) r++; }); return r; };
+  var soft = function (i) { var s = 0, w = 0; for (var q = 0; q < 10; q++) { var ww = 1 - 0.9 * q / 9; s += rankAt(t - 0.25 * q / 9, i) * ww; w += ww; } return s / w; };
+  for (var i = 0; i < 5; i++) {
+    var rk = soft(i), y = ly + 98 + rk * 90, sc = score(params(i, t)), hidden = fz > 0 && (i === 0 || i === 1);
+    var top = fz > 0 ? (i === 0 || i === 1) : rk < 0.5;
+    rect(lx + 20, y, PW - 40, 82, top ? "rgba(255,96,0,0.14)" : null, null, 0, 1, 14);
+    text(hidden ? "?" : String(Math.round(rk) + 1), lx + 52, y + 52, { size: 32, weight: 800, color: top ? "#FF8A3D" : "#fff", align: "center", ls: 0 });
+    dot(lx + 110, y + 41, 18, TEAM[i]); text("ABCDE"[i], lx + 110, y + 48, { size: 19, weight: 800, align: "center", color: "#fff", ls: 0 });
+    var p = params(i, t);
+    text(TNAME[i], lx + 144, y + 36, { size: 30, weight: 700, color: "#fff", ls: -0.4 });
+    text(p[0].toFixed(1) + " m × " + p[1].toFixed(1) + " kg · " + fmt(p[2]), lx + 144, y + 70, { size: 27, weight: 600, color: C.onP, ls: 0 });
+    var bw = 190 * clamp(sc / 22);
+    rect(lx + 620, y + 33, 190, 16, "rgba(237,243,246,0.18)", null, 0, 1, 8);
+    rect(lx + 620, y + 33, bw, 16, i === 4 ? "#6E8CC0" : TEAM[i], null, 0, 1, 8);
+    text(hidden ? "?" : sc.toFixed(1), lx + PW - 32, y + 52, { size: 32, weight: 800, color: "#fff", align: "right", ls: 0 });
+  }
+  SA = A;
+  SA = 1;
+}
+
+/* ---------- 05, team learnings: "Who" stays put; only the words that change roll, word by word, at a steady pace;
+   on phones the question takes two lines, the second standing on the model's bridge deck; the group's name sits small above ---------- */
+var LEARN = [["Resource allocation", "controls", "the budget?"],
+             ["Resource allocation", "buy", "expertise?"],
+             ["Resource allocation", "build", "expertise?"],
+             ["Behaviour under pressure", "panics", "when prices jump?"],
+             ["Behaviour under pressure", "spots", "the cheap route?"],
+             ["Collaboration", "trades", "with others?"],
+             ["Collaboration", "corners", "the market?"]];
+var LEARN_AT = [24, 28, 31, 34, 38, 42, 45].map(B2);   // each line holds in proportion to its length: 4, 3, 3, 4, 4, 3, 4 beats, every change on a beat
+var WORD_D = 0.36, WORD_STAG = 0.05;   // set per line in sceneLearn: the shorter the line, the quicker it rolls
+function eroll(x) { var c1 = 1.2, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+// word by word: a word that stays only slides sideways to make room; a word that changes rolls up and out as the new one rolls up into place
+function rollWords(A, B, x, yb, o, step, t, t0, k0) {
+  var sp = measure(" ", o.size, o.weight, o.ls); k0 = k0 || 0;
+  function xs(W_) { var r = [], cx = x; (W_ || []).forEach(function (w) { r.push(cx); cx += measure(w.s, o.size, o.weight, o.ls) + sp; }); return r; }
+  var xa = xs(A), xb = xs(B), n = Math.max(A ? A.length : 0, B.length);
+  for (var i = 0; i < n; i++) {
+    var a = A && A[i], b = B[i], k = seg(t, t0 + (k0 + i) * WORD_STAG, t0 + (k0 + i) * WORD_STAG + WORD_D), kr = eroll(k);
+    if (a && b && a.s === b.s && a.c === b.c) { text(b.s, lerp(xa[i], xb[i], eo(k)), yb, Object.assign({}, o, { color: b.c })); continue; }
+    if (a) text(a.s, xa[i], yb - kr * step, Object.assign({}, o, { color: a.c, alpha: o.alpha * (1 - 0.35 * Math.min(1, kr)) }));
+    if (b) text(b.s, xb[i], yb + (1 - kr) * step, Object.assign({}, o, { color: b.c, alpha: o.alpha * (1 - 0.35 * Math.min(1, Math.abs(1 - kr))) }));
+  }
+}
+function verbWords(q) { return [{ s: q[1], c: C.acc }]; }
+function objWords(q) { return q[2].split(" ").map(function (w) { return { s: w, c: C.ink }; }); }
+function titleWords(q) { return q[0].split(" ").map(function (w) { return { s: w, c: C.ink }; }); }
+function sceneLearn(t) {
+  if (t < T_REVEAL || t >= T_END + 0.15) return; SA = 1;
+  var size = 112, wt = 900, ls = -size * 0.04, sp = measure(" ", size, wt, ls), lh = size * 1.18, gap = size * 1.12;
+  var x0 = 64, xs = x0 + measure("Who", size, wt, ls) + sp;
+  var y2 = DECK_Y === null ? 1000 : clamp(DECK_Y, 760, 1300), y1 = y2 - gap;   // the second line stands on the model's bridge deck
+  var inA = eo5(seg(t, T_REVEAL, T_REVEAL + 0.5)), fade = 1 - seg(t, T_END, T_END + 0.12);   // no exit roll: it goes as the photos arrive
+  var cur = 0; LEARN_AT.forEach(function (at, i) { if (t >= at) cur = i; });
+  var prev = cur > 0 ? LEARN[cur - 1] : null, now = LEARN[cur], t0 = LEARN_AT[cur];
+  var nw = 1 + now[2].split(" ").length; WORD_D = 0.22 + 0.04 * nw; WORD_STAG = 0.03 + 0.006 * nw;
+  var L = { size: size, weight: wt, ls: ls, alpha: fade };
+  ctx.save(); ctx.beginPath(); ctx.rect(VX0, y1 - size * 0.98, VX1 - VX0, size * 1.3); ctx.clip();
+  text("Who", x0, y1 + (1 - inA) * size * 1.05, Object.assign({}, L, { color: C.ink }));
+  rollWords(prev && verbWords(prev), verbWords(now), xs, y1, L, lh, t, t0, 0);
+  ctx.restore();
+  ctx.save(); ctx.beginPath(); ctx.rect(VX0, y2 - size * 0.98, VX1 - VX0, size * 1.3); ctx.clip();
+  rollWords(prev && objWords(prev), objWords(now), x0, y2, L, lh, t, t0, 1);
+  ctx.restore();
+  // the group's name, small, above the question; its words roll only when the group changes
+  var ts = 40, ty = y1 - size - 30;
+  ctx.save(); ctx.beginPath(); ctx.rect(VX0, ty - ts * 1.05, VX1 - VX0, ts * 1.45); ctx.clip();
+  rollWords(prev && titleWords(prev), titleWords(now), x0 + 4, ty, { size: ts, weight: 700, ls: -0.4, alpha: fade }, ts * 1.3, t, t0, 0);
+  ctx.restore();
+  SA = 1;
+}
+
+/* ---------- the end photos, 0:54.8 to 0:58.7: four photos at full strength, each fading into the next on the beat ---------- */
+var T_LEN = 60;   // the film's length on the clock
+var T_CAR = T_END, CAR = { w: 960, h: 1080, cy: 900 }, CAR_IMG = [];
+var BEAT = (B2(51) - B2(49)) / 2, CAR_STEP = 2 * BEAT, CAR_AT = [0, 1, 2, 3].map(function (i) { return T_END + i * CAR_STEP; }), CAR_X = 0.25;
+var T_OUTRO = T_END + 4 * CAR_STEP;   // 0:58.7, two beats after the fourth photo: the logo and the details take over
+function photo(im, a, t, t0) {
+  if (!(im && im.complete && im.naturalWidth) || a <= 0) return;
+  var w = CAR.w, h = CAR.h, x = 540 - w / 2, y = CAR.cy - h / 2, kb = 1 + 0.05 * seg(t, t0, t0 + CAR_STEP + CAR_X);
+  var iw = im.naturalWidth, ih = im.naturalHeight, sw = Math.min(iw, ih * w / h) / kb, sh = sw * h / w;   // centre crop to the card
+  ctx.save(); ctx.globalAlpha = a; ctx.beginPath(); ctx.roundRect(x, y, w, h, 26); ctx.clip();
+  ctx.drawImage(im, (iw - sw) / 2, (ih - sh) / 2, sw, sh, x, y, w, h); ctx.restore();
+}
+function sceneCarousel(t) {
+  if (t < T_CAR) return;
+  var ga = seg(t, T_END, T_END + 0.2) * (1 - seg(t, T_OUTRO, T_OUTRO + 0.3));
+  if (ga <= 0) return;
+  var cur = 0; CAR_AT.forEach(function (at, i) { if (t >= at) cur = i; });
+  var k = seg(t, CAR_AT[cur], CAR_AT[cur] + CAR_X);
+  if (cur > 0 && k < 1) photo(CAR_IMG[cur - 1], ga, t, CAR_AT[cur - 1]);
+  photo(CAR_IMG[cur], ga * (cur > 0 ? k : 1), t, CAR_AT[cur]);
+}
+
+/* ---------- end card: the logo builds, with its subtitle; the team dots and the details below ---------- */
+function sceneEnd(t) {
+  var T0 = T_OUTRO + 0.1;   // right after the fourth photo; the clock still stops at 1:00
+  if (t < T0) return; SA = 1;
+  var L = LOGO_END; drawLogo(L.tx, L.ty, L.s, seg(t, T0 + 0.1, T0 + 0.1 + CANDLE_D), seg(t, T0, T0 + 0.42), seg(t, T0 + 0.5, T0 + 0.9));
+  var y0 = L.ty + 669 * L.s;
+  for (var k = 0; k < 5; k++) dot(540 + (k - 2) * 52, y0 + 92, 13 * eback(seg(t, T0 + 0.9 + k * 0.06, T0 + 1.2 + k * 0.06)), TEAM[k]);
+  var MS = { weight: 500, fam: "MontLogo", align: "center", color: C.ink, ls: 0 };          // the subtitle's Montserrat and ink
+  reveal("A half-day team challenge,", 540, y0 + 196, seg(t, T0 + 1.2, T0 + 1.6), Object.assign({ size: 48 }, MS));
+  reveal("designed by architects.", 540, y0 + 256, seg(t, T0 + 1.28, T0 + 1.68), Object.assign({ size: 48 }, MS));
+  reveal("6 to 50 participants  ·  Your venue or off-site", 540, y0 + 344, seg(t, T0 + 1.5, T0 + 1.9), Object.assign({ size: 37 }, MS));
+  reveal("From HK$730 per person", 540, y0 + 396, seg(t, T0 + 1.62, T0 + 2.02), Object.assign({ size: 37 }, MS));
+  SA = 1;
+}
+
+/* ---------- frame ---------- */
+// the area every scene needs, in the film's 1080 x 1920 space; it is scaled to fill the canvas, and full-bleed layers run to the canvas edges
+var BAND = { x0: 16, x1: 1064, y0: 150, y1: 1680 }, VX0 = 0, VX1 = W, VY0 = 0, VY1 = H, FS = 1;
+var DECK_F = null, DECK_Y = null;   // the bridge deck of the model behind the film: a share of the canvas height (from the page), and in film units
+function render(t) {
+  if (!ctx) return;
+  t = clamp(t, 0, DUR);
+  var cw = cv.width, ch = cv.height;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, cw, ch);
+  var s = Math.min(cw / (BAND.x1 - BAND.x0), ch / (BAND.y1 - BAND.y0));
+  var ox = cw / 2 - s * (BAND.x0 + BAND.x1) / 2, oy = ch / 2 - s * (BAND.y0 + BAND.y1) / 2;
+  ctx.setTransform(s, 0, 0, s, ox, oy); FS = s;
+  VX0 = -ox / s; VX1 = (cw - ox) / s; VY0 = -oy / s; VY1 = (ch - oy) / s;
+  DECK_Y = DECK_F === null || !isFinite(DECK_F) ? null : (DECK_F * ch - oy) / s;
+  sceneIntro(t); sceneTitle(t); sceneBid(t); sceneBuild(t); sceneBreak(t); sceneScore(t); sceneLearn(t); sceneCarousel(t); sceneEnd(t);
+}
+var ready = document.fonts && document.fonts.load ? Promise.all([document.fonts.load("900 100px Inter"), document.fonts.load("700 40px Inter"), document.fonts.load("900 100px MontLogo"), document.fonts.load("500 40px MontLogo")]).catch(function () {}) : Promise.resolve();
+window.LBLFilmM = {
+  DUR: DUR,
+  LEN: T_LEN,   // what the clock shows; the end card plays after it
+  CH: [T_BID, T_BUILD, T_BREAK, T_SCORE, T_REVEAL, T_END],
+  init: function (canvas, imgs) {
+    cv = canvas; ctx = cv.getContext("2d");
+    CAR_IMG = (imgs || []).map(function (src) { var im = new Image(); im.decoding = "async"; im.src = src; return im; });
+    return ready;
+  },
+  render: render,
+  deck: function (f) { DECK_F = f; }
+};
+})();

@@ -63,7 +63,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 500; letter-spacing: -0.035em; line-hei
 .bg img { display: block; width: 100%; height: calc(100% + 6vh); object-fit: cover; object-position: 50% 40%;
   transform: translate3d(0, var(--py, 0px), 0) scale(var(--z, 1.06)); transform-origin: 50% 40%; will-change: transform; }
 @media (hover: none), (pointer: coarse) { .bg img { height: 100%; transform: none; will-change: auto; } }
-.bg .veil { position: absolute; inset: 0; opacity: var(--veil, 0);
+.bg .veil { display: none; position: absolute; inset: 0; opacity: var(--veil, 0);
   background: linear-gradient(180deg, rgba(240, 240, 245, 0.5), rgba(232, 232, 238, 0.7)); }
 
 /* ---------- heads-up display ---------- */
@@ -150,7 +150,9 @@ section { position: relative; padding: clamp(96px, 14vh, 150px) var(--gut); }
 @font-face { font-family: "MontLogo"; src: url("film/fonts/montserrat-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-display: swap; }
 .hero.hfilm { --hw: min(100%, calc((100svh - 350px) * 16 / 9)); justify-content: center; gap: clamp(12px, 2vh, 22px); padding-top: 116px; padding-bottom: 76px; }
 .hero.hfilm::before { background: radial-gradient(75% 65% at 50% 52%, rgba(247, 247, 245, 0.55), rgba(247, 247, 245, 0) 78%); }
-.chap { list-style: none; margin: 0 auto; padding: 0; width: var(--hw); display: grid; grid-template-columns: repeat(5, 1fr); gap: 0 clamp(10px, 1.6vw, 24px); }
+.chap { list-style: none; margin: 0 auto; padding: 0; width: var(--hw); display: grid; grid-template-columns: 0.4fr repeat(5, 1fr) 0.4fr; gap: 0 clamp(10px, 1.6vw, 24px); }
+.chap .sm { display: none; }
+.chap .mini button { height: 100%; min-height: 24px; }
 .chap button { display: block; width: 100%; position: relative; padding: 13px 0 0; border: 0; background: none; text-align: left; cursor: pointer;
   font: inherit; font-weight: 600; font-size: var(--t1); letter-spacing: -0.02em; line-height: 1.2; color: var(--ink-soft); transition: color 0.35s; }
 .chap button::before, .chap button::after { content: ""; position: absolute; left: 0; top: 0; height: 3px; border-radius: 2px; }
@@ -402,7 +404,9 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   .hero.hfilm #vid { display: none; }
   .hero.hfilm .screen:fullscreen { background: #F7F7F5; }
   .hero.hfilm .hfoot { height: 76px; flex: none; gap: 6px; justify-content: flex-start; }
-  .chap { width: 100%; gap: 0 8px; }
+  .chap { width: 100%; gap: 0 8px; grid-template-columns: 0.3fr repeat(5, 1fr) 0.3fr; }
+  .chap .lg { display: none; }
+  .chap .sm { display: inline; }
   .chap button { font-size: 0.82rem; padding-top: 10px; }
   .chap .xs { display: none; }
   .hfoot { width: 100%; flex-direction: column; align-items: flex-start; }
@@ -456,17 +460,19 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   <section class="hero hfilm" id="top" data-sec="Film">
     <h1 class="sr">Load-Bearing Legends: The Bridge Exchange, a team challenge designed and run by architects in Hong Kong</h1>
     <ol class="chap" id="chap" aria-label="The challenge in five steps">
+      <li class="mini" id="ch-in"><button type="button" data-t="0" aria-label="Intro"></button></li>
       <li><button type="button" data-t="5.92"><span class="n">01</span><span class="t">Bid</span></button></li>
       <li><button type="button" data-t="17.56"><span class="n">02</span><span class="t">Build</span></button></li>
       <li><button type="button" data-t="23.36"><span class="n">03</span><span class="t">Break</span></button></li>
-      <li><button type="button" data-t="33.03"><span class="n">04</span><span class="t">Legend <span class="xs">Score</span></span></button></li>
-      <li><button type="button" data-t="44.64"><span class="n">05</span><span class="t">Team <span class="xs">learnings</span></span></button></li>
+      <li><button type="button" data-t="31.10"><span class="n">04</span><span class="t"><span class="lg">Legend Score</span><span class="sm">Score</span></span></button></li>
+      <li><button type="button" data-t="42.71"><span class="n">05</span><span class="t"><span class="lg">Team learnings</span><span class="sm">Learning</span></span></button></li>
+      <li class="mini" id="ch-out"><button type="button" data-t="54.81" aria-label="Outro"></button></li>
     </ol>
     <figure class="film">
       <div class="screen" id="screen">
         <canvas id="hcv" role="img" aria-label="The Bridge Exchange in one minute: the live market, the build, the load test and the Legend Score"></canvas>
         <video id="vid" playsinline muted loop preload="none" aria-label="The Bridge Exchange, a 62-second film"></video>
-        <audio id="aud" preload="none" src="film/bridge-exchange-audio.m4a"></audio>
+        <audio id="aud" preload="none" src="film/bridge-exchange-audio-30.m4a"></audio>
       </div>
     </figure>
     <div class="hfoot">
@@ -643,8 +649,8 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   </div>
 </footer>
 
-<script src="film/hero-film-26.js"></script>
-<script src="film/hero-film-m1.js"></script>
+<script src="film/hero-film-29.js"></script>
+<script src="film/hero-film-m4.js"></script>
 <script>
 (function () {
   "use strict";
@@ -709,17 +715,22 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   /* ---------- the film ---------- */
   var screen = document.getElementById("screen"), bPlay = document.getElementById("btn-play"), bSound = document.getElementById("btn-sound"),
       bBig = document.getElementById("play-sound"), tEl = document.getElementById("time"), vid = document.getElementById("vid"),
-      steps = [].slice.call(document.querySelectorAll("#chap li")), userPaused = false;
+      steps = [].slice.call(document.querySelectorAll("#chap li:not(.mini)")), userPaused = false;
   function mmss(s) { s = Math.max(0, s || 0); return ("0" + Math.floor(s / 60)).slice(-2) + ":" + ("0" + Math.floor(s % 60)).slice(-2); }
   var phone = matchMedia("(max-width: 760px)").matches, F = phone ? window.LBLFilmM : window.LBLFilm, live = !!F;   // phones get the vertical cut, laptops the wide one; both drawn live
   // the five steps above the film light up in orange, one by one, as the film reaches them
   var T = live ? F.CH.slice(0, 5) : steps.map(function (li) { return +li.firstElementChild.getAttribute("data-t"); }), T_END = live ? F.CH[5] : 54.8;
+  var miniIn = document.getElementById("ch-in"), miniOut = document.getElementById("ch-out"), T_LEN = live && F.LEN ? F.LEN : 60;
+  function fill(li, a, b, t) { li.style.setProperty("--p", (Math.max(0, Math.min(1, (t - a) / (b - a))) * 100).toFixed(1) + "%"); }
   function chapters(t) {
     steps.forEach(function (li, i) {
       var a = T[i], b = i < T.length - 1 ? T[i + 1] : T_END;
       li.classList.toggle("on", t >= a && t < b); li.classList.toggle("done", t >= b && t < T_END);
-      li.style.setProperty("--p", (Math.max(0, Math.min(1, (t - a) / (b - a))) * 100).toFixed(1) + "%");
+      fill(li, a, b, t);
     });
+    // the intro before 01 and the outro after 05: bars only
+    miniIn.classList.toggle("on", t < T[0]); miniIn.classList.toggle("done", t >= T[0] && t < T_END); fill(miniIn, 0, T[0], t);
+    miniOut.classList.toggle("on", t >= T_END); fill(miniOut, T_END, T_LEN, t);
   }
   window.lblChapters = chapters;
 
@@ -776,6 +787,8 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
     steps.forEach(function (li, i) {
       li.firstElementChild.addEventListener("click", function () { playing = true; go(T[i] + 0.05); if (sound) aud.play(); sync(); });
     });
+    miniIn.firstElementChild.addEventListener("click", function () { playing = true; go(0); if (sound) aud.play(); sync(); });
+    miniOut.firstElementChild.addEventListener("click", function () { playing = true; go(T_END + 0.05); if (sound) aud.play(); sync(); });
     if (!(screen.requestFullscreen || screen.webkitRequestFullscreen)) document.getElementById("btn-full").hidden = true;   // not on iPhone
     document.getElementById("btn-full").addEventListener("click", function () {
       if (!sound) withSound(0);
@@ -901,9 +914,12 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   var f = document.getElementById("book-form"), nIn = document.getElementById("b-n");
   var hk = function (x) { return "HK$" + Math.round(x).toLocaleString("en-US"); };
   function val(name) { var el = f.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : null; }
-  function clampN() { var n = Math.round(+nIn.value || 20); n = Math.max(6, Math.min(50, n)); nIn.value = n; return n; }
-  function estimate() {
-    var n = clampN(), venue = val("venue");
+  function readN() { var v = parseInt(nIn.value, 10); return isNaN(v) ? null : Math.max(6, Math.min(50, v)); }
+  function clampN() { var n = readN(); if (n === null) n = 20; if (String(n) !== nIn.value) nIn.value = n; return n; }
+  // while you type, the estimate follows without touching what you typed; the field is tidied when you leave it
+  function estimate(e) {
+    var typing = e && e.type === "input" && e.target === nIn;
+    var n = typing ? (readN() || 6) : clampN(), venue = val("venue");
     var disc = n >= 41 ? 0.15 : n >= 21 ? 0.10 : n >= 12 ? 0.05 : 0, r = PRICE.perHead * (1 - disc);
     var extra = venue === "out" ? PRICE.offsite : 0;
     var total = Math.round(Math.max(PRICE.minimum, n * (r + extra)) / 10) * 10;
@@ -919,8 +935,9 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
     document.getElementById("e-send").href = "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
   }
   f.addEventListener("input", estimate); f.addEventListener("change", estimate);
-  f.querySelectorAll("[data-step]").forEach(function (b) { b.addEventListener("click", function () { nIn.value = clampN() + (+b.dataset.step); estimate(); }); });
-  nIn.addEventListener("blur", estimate);
+  f.querySelectorAll("[data-step]").forEach(function (b) { b.addEventListener("click", function () { nIn.value = Math.max(6, Math.min(50, clampN() + (+b.dataset.step))); estimate(); }); });
+  nIn.addEventListener("blur", function () { estimate(); });
+  nIn.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); nIn.blur(); } });
   f.addEventListener("submit", function (e) { e.preventDefault(); });
   estimate();
 })();
